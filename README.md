@@ -1,7 +1,3 @@
-If you'd like to improve the UI of your README file, here are some suggestions for formatting and enhancing its visual appeal:
-
----
-
 ## 📘 EventSphere Management System
 
 **EventSphere Management** is a scalable event management platform designed for expos and trade shows. Built with the **MEVN stack**, it ensures secure authentication, real-time updates, and powerful analytics.
