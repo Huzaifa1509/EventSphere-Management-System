@@ -2,7 +2,17 @@ const User = require('../Models/User');
 // const bcrypt = require('bcrypt');
 const bcryptjs = require("bcryptjs")
 const jwt = require('jsonwebtoken');
-
+const nodemailer = require('nodemailer');
+// Configure Nodemailer transporter
+const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOSTNAME, // e.g., smtp.gmail.com for Gmail
+    port: process.env.SMTP_PORT, 
+    secure: true, // Set to true if using port 465
+    auth: {
+        user: process.env.SMTP_USER, // Your SMTP username
+        pass: process.env.SMTP_PASS,   // Your SMTP password
+    },
+});
 const createUser = async (req, res) => {
     try {
         const { name, email, password, role, phone, organization } = req.body;
@@ -47,6 +57,24 @@ const createUser = async (req, res) => {
         await newUser.save();
 
         const token = jwt.sign({ userId: newUser._id, role: newUser.role }, process.env.JWT_SECRET, { expiresIn: '3h' });
+
+        const mailOptions = {
+            from: '"Event Sphere" eventsphere@worldoftech.company', // Sender address
+            to: email, // Recipient
+            subject: 'Welcome to Our Platform!',
+            html: `<p>Hi ${name},</p>
+                   <p>Thank you for registering. Please verify your email to complete your registration:</p>
+                   <p><a href="http://localhost:5000/verify-email?token=${token}">Verify Email</a></p>
+                   <p>If you did not register, please ignore this email.</p>`,
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending email:', error);
+            } else {
+                console.log('Verification email sent:', info.response);
+            }
+        });
 
         res.status(201).json({
             message: "User created successfully",
