@@ -1,5 +1,6 @@
 const User = require('../Models/User');
-const bcrypt = require('bcrypt');
+// const bcrypt = require('bcrypt');
+const bcryptjs = require("bcryptjs")
 const jwt = require('jsonwebtoken');
 
 const createUser = async (req, res) => {
@@ -11,20 +12,28 @@ const createUser = async (req, res) => {
             return res.status(409).json({ message: "Email already in use" });
         }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        console.table({ name, email, password, role, phone, organization });
+
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[cC][oO][mM]$/;
         if (!emailRegex.test(email)) {
+            console.log(email)
             return res.status(400).json({ message: "Invalid email format" });
         }
 
         if (password.length < 8 || !/\d/.test(password) || !/[a-zA-Z]/.test(password)) {
+            console.log(password)
             return res.status(400).json({ message: "Password must be at least 8 characters long and contain both letters and numbers." });
         }
 
         if (role === 'Organizer' && (!organization || organization.trim() === '')) {
+            console.log(organization)
             return res.status(400).json({ message: "Organization is required for the 'Organizer' role" });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const salt = await bcryptjs.genSalt(10)
+        const hashedPassword = await bcryptjs.hash(password, salt)
+
+        console.log(hashedPassword)
 
         const newUser = new User({
             name,
