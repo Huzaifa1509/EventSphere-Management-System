@@ -28,8 +28,10 @@ app.get('/api/users/profile', protect, userController.getProfile);
 app.put('/api/users/:userId', userController.updateUser);
 
 // Expo routes
-app.post('/api/expos', expoController.createExpo); // Route to create an Expo
-
+app.post('/api/expos', expoController.createExpo); ///to create an Expo
+app.get('/api/expos', expoController.getAllExpos); //to get all Expos
+app.get('/api/expos/:expoId', expoController.getExpoById); /// to get a specific Expo by ID
+app.delete('/api/expos/:expoId', expoController.deleteExpo); //to delete an Expo
 
 // Start the server
 const PORT = process.env.PORT || 5000;

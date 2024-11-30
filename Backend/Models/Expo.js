@@ -40,7 +40,11 @@ const expoSchema = new mongoose.Schema({
   createdAt: { 
     type: Date, 
     default: Date.now 
-  }
+  },
+  booths: [{ 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "Booth" 
+  }]
 });
 
 module.exports = mongoose.model("Expo", expoSchema);
