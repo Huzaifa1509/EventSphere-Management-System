@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 const cors = require("cors");
 const userController = require('./Controllers/UserController');
-
+const protect = require('./Middlewares/token_decode');
 const connectDB = require('./Configuration/db_config');
 
 const corsOptions = {
@@ -20,7 +20,7 @@ app.post('/api/users', userController.createUser);
 app.get('/api/allusers', userController.getAllUsers);
 app.delete('/api/users/:userId', userController.deleteUser);
 app.post('/api/users/login', userController.loginUser);
-app.get('/api/users/profile', userController.getProfile);
+app.get('/api/users/profile', protect,  userController.getProfile);
 app.put('/api/users/:userId', userController.updateUser);
 
 const PORT = process.env.PORT ? process.env.PORT : 5000;
