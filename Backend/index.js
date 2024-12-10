@@ -4,6 +4,7 @@ const app = express();
 const cors = require("cors");
 const userController = require('./Controllers/UserController');
 const expoController = require('./Controllers/ExpoController'); // Import the Expo controller
+const AttendeeController = require('./Controllers/AttendeeController');
 const protect = require('./Middlewares/token_decode');
 const connectDB = require('./Configuration/db_config');
 
@@ -32,6 +33,10 @@ app.post('/api/expos', expoController.createExpo); ///to create an Expo
 app.get('/api/expos', expoController.getAllExpos); //to get all Expos
 app.get('/api/expos/:expoId', expoController.getExpoById); /// to get a specific Expo by ID
 app.delete('/api/expos/:expoId', expoController.deleteExpo); //to delete an Expo
+
+//Attende routes
+app.post('/registerForExpo/:expoId',protect, AttendeeController.registerForExpo);
+
 
 // Start the server
 const PORT = process.env.PORT || 5000;
