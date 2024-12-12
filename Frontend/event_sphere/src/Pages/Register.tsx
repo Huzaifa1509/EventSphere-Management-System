@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/Components/ui/Form';
 import { Input } from '@/Components/ui/Input'
 import { Key } from 'lucide-react';
-import { Link, redirect } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios'
 import { useToast } from "@/hooks/use-toast"
 import { Toaster } from '@/Components/ui/Toaster';
@@ -23,6 +23,7 @@ const formSchema = z.object({
 
 const Register = () => {
   const { toast } = useToast()
+  const navigate = useNavigate()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,7 +53,7 @@ const Register = () => {
               title: "Success",
               description: "You have been registered successfully",
             })
-            redirect('/home');
+            navigate('/home')
           }
         })
         .catch(error => {
