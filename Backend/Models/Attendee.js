@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 
-const AttendeeSchema = new Schema({
+const AttendeeSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -36,15 +36,15 @@ const AttendeeSchema = new Schema({
 
   // Event Participation
   exposRegistered: [{
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Expo'
   }],
   sessionsRegistered: [{
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Session'
   }],
   bookmarkedSessions: [{
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Session'
   }],
 

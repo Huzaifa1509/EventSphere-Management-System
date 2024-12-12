@@ -261,9 +261,9 @@ const getUserSchedule = async (req, res) => {
 module.exports = {
   getUserSchedule,
   updateNotificationPreferences,
-  updateProfile,
-  interactWithExhibitor,
-  bookmarkSession,
+  // updateProfile,
+  // interactWithExhibitor,
+  // bookmarkSession,
   registerForExpo,
-  registerForSession,
+  // registerForSession,
 };
