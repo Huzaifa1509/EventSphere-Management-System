@@ -35,7 +35,7 @@ const createUser = async (req, res) => {
             return res.status(400).json({ message: "Password must be at least 8 characters long and contain both letters and numbers." });
         }
 
-        if (role === 'Organizer' && (!organization || organization.trim() === '')) {
+        if (role === 'ORGANIZER' && (!organization || organization.trim() === '')) {
             console.log(organization)
             return res.status(400).json({ message: "Organization is required for the 'Organizer' role" });
         }

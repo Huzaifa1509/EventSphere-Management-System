@@ -7,6 +7,11 @@ import { defineConfig } from "vite";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  server: {
+    proxy: {
+      "/api": "http://localhost:5000", // Proxy API requests
+    },
+  },
   plugins: [react()],
   resolve: {
     alias: {

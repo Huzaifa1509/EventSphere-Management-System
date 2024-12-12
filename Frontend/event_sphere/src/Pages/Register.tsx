@@ -7,12 +7,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/Components/ui/Form';
 import { Input } from '@/Components/ui/Input'
 import { Key } from 'lucide-react';
-import { Link } from 'react-router-dom';
-
+import { Link, redirect } from 'react-router-dom';
+import axios from 'axios'
+import { useToast } from "@/hooks/use-toast"
+import { Toaster } from '@/Components/ui/Toaster';
 
 const formSchema = z.object({
-  email: z.string().min(5).max(50).regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[cC][oO][mM]$/),
   name: z.string().min(5).max(50),
+  email: z.string().min(5).max(50).regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[cC][oO][mM]$/),
   password: z.string().min(2).max(50),
   role: z.string().min(2).max(50).toUpperCase(),
   phone: z.string().min(13).max(14),
@@ -20,11 +22,12 @@ const formSchema = z.object({
 })
 
 const Register = () => {
+  const { toast } = useToast()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
       name: "",
+      email: "",
       password: "",
       role: "",
       phone: "",
@@ -32,38 +35,46 @@ const Register = () => {
     },
   })
 
-  const onSubmit = (values) => {
+  function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
-    // This will be validated.
+    // ✅ This will be type-safe and validated.
     console.log(values)
+
+    try {
+      axios.post('api/users', values)
+        .then(response => {
+          console.log(response.data);
+          if (response.status === 201 && response.data.token) {
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+            toast({
+              variant: "default",
+              title: "Success",
+              description: "You have been registered successfully",
+            })
+            redirect('/home');
+          }
+        })
+        .catch(error => {
+          console.error("Error: ", error.response.data.message);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: error.response.data.message,
+          })
+        });
+    } catch (error) {
+      console.error("Catch Error: ", error);
+    }
   }
-  // name,
-  // email,
-  //   password,
-  //     role,
-  //     phone,
-  //     organization,
 
   return (
     <>
+
       <div className="flex flex-col items-center justify-center h-screen">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-96 bg-slate-900 text-white p-5 rounded-2xl">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="johndoe@example.com" {...field} />
-                  </FormControl>
+          <form method='post' onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-96 bg-slate-900 text-white p-5 rounded-2xl">
 
-                  <FormMessage />
-
-                </FormItem>
-              )}
-            />
             <FormField
 
               control={form.control}
@@ -80,7 +91,38 @@ const Register = () => {
               )}
             />
 
-            {/* Role - With Select*/}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="johndoe@example.com" {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='password'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input placeholder="password" type="password" {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+
             <FormField
               control={form.control}
               name="role"
@@ -95,6 +137,7 @@ const Register = () => {
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="ORGANIZER">Organizer</SelectItem>
+                      <SelectItem value="EXHIBITOR">Exhibitor</SelectItem>
                       <SelectItem value="ATTENDEE">Attendee</SelectItem>
                     </SelectContent>
                   </Select>
@@ -110,7 +153,7 @@ const Register = () => {
                 <FormItem>
                   <FormLabel>Phone</FormLabel>
                   <FormControl>
-                    <Input placeholder="Fishy!!!$$" {...field} />
+                    <Input placeholder="+12345678910" {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -118,14 +161,15 @@ const Register = () => {
               )}
             />
 
+
             <FormField
               control={form.control}
-              name='password'
+              name='organization'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Organization</FormLabel>
                   <FormControl>
-                    <Input placeholder="+12345678910" {...field} />
+                    <Input placeholder="Event Sphere" {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -136,9 +180,10 @@ const Register = () => {
             <Button className="w-full bg-white text-black hover:bg-black hover:text-white" type="submit"><Key /> Register</Button>
           </form>
         </Form>
-
+        <Link to="/" className='text-rose-950 mt-5'>Already have an account?</Link>
       </div>
 
+      <Toaster />
     </>
   )
 }

@@ -5,6 +5,7 @@ import App from './App.jsx'
 import Login from './Pages/Login.tsx'
 import Register from './Pages/Register.tsx'
 import ForgetPassword from './Pages/ForgetPassword.tsx'
+import Home from './Pages/Home.jsx'
 import {createBrowserRouter, createRoutesFromElements, Route, RouterProvider} from 'react-router-dom'
 
 const router = createBrowserRouter(
@@ -12,7 +13,8 @@ const router = createBrowserRouter(
     <Route path="/" element={<App />}>
       <Route index element={<Login />} />
       <Route path="register" element={<Register />} />
-      <Route path="forget-password" element={<ForgetPassword />} />      
+      <Route path="forget-password" element={<ForgetPassword />} />    
+      <Route path="home" element={<Home />} />
     </Route>
   )
 )
