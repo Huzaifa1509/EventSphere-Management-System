@@ -1,8 +1,8 @@
 const User = require('../Models/User');
-// const bcrypt = require('bcrypt');
 const bcryptjs = require("bcryptjs")
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+
 // Configure Nodemailer transporter
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOSTNAME, // e.g., smtp.gmail.com for Gmail
@@ -103,7 +103,7 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await bcryptjs.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
