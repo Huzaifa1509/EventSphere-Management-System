@@ -1,8 +1,8 @@
 const User = require('../Models/User');
-// const bcrypt = require('bcrypt');
 const bcryptjs = require("bcryptjs")
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+
 // Configure Nodemailer transporter
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOSTNAME, // e.g., smtp.gmail.com for Gmail
@@ -35,7 +35,7 @@ const createUser = async (req, res) => {
             return res.status(400).json({ message: "Password must be at least 8 characters long and contain both letters and numbers." });
         }
 
-        if (role === 'Organizer' && (!organization || organization.trim() === '')) {
+        if (role === 'ORGANIZER' && (!organization || organization.trim() === '')) {
             console.log(organization)
             return res.status(400).json({ message: "Organization is required for the 'Organizer' role" });
         }
@@ -103,7 +103,7 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await bcryptjs.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }

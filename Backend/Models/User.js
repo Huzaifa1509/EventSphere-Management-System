@@ -18,8 +18,8 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['Admin', 'Exhibitor', 'Attendee'],
-        default: 'Attendee',
+        enum: ['ADMIN', 'EXHIBITOR', 'ATTENDEE'],
+        default: 'ATTENDEE',
         required: true,
     },
     phone: {
@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
     organization: {
         type: String,
         required: function () {
-            return this.role === 'Organizer'; 
+            return this.role === 'ORGANIZER'; 
         },
     },
     profilePicture: {
