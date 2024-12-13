@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -24,7 +24,6 @@ const formSchema = z.object({
 const Register = () => {
   const { toast } = useToast()
   const navigate = useNavigate()
-  const [organizer, setOrganizer] = useState('')
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
