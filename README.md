@@ -52,11 +52,11 @@ EventSphere-Management/
 3. **Install dependencies for both backend and frontend**:
    ```bash
    # Backend
-   cd backend
+   cd Backend
    npm install
    
    # Frontend
-   cd ../frontend
+   cd Frontend/event_sphere
    npm install
    ```
 
@@ -81,39 +81,27 @@ EventSphere-Management/
 6. **Start the frontend server**:
    ```bash
    cd frontend
-   npm start
+   npm run dev
    ```
 
 7. **Open your browser**:
    ```
-   http://localhost:3000
+   copy the url from the terminal where you've started the frontend server
    ```
 
 ---
 
 ### 📜 Environment Variables
 
-| Variable      | Description                        |
-|---------------|------------------------------------|
-| `PORT`        | Backend server port               |
-| `MONGO_URI`   | MongoDB connection string         |
-| `JWT_SECRET`  | Secret for JSON Web Tokens (JWTs) |
-
----
-
-### 📈 Scripts
-
-#### Backend:
-- **Start the server**:
-  ```bash
-  npm start
-  ```
-
-#### Frontend:
-- **Start the React app**:
-  ```bash
-  npm start
-  ```
+| Variable        | Description                       |
+|-----------------|-----------------------------------|
+| `PORT`          | Backend server port               |
+| `MONGO_URI`     | MongoDB connection string         |
+| `JWT_SECRET`    | Secret for JSON Web Tokens (JWTs) |
+| `SMTP_USER`     | SMTP account username             |
+| `SMTP_PASS`     | SMTP account password             |
+| `SMTP_HOSTNAME` | SMTP hostname                     |
+| `SMTP_PORT`     | SMTP port                         |
 
 ---
 
