@@ -28,9 +28,10 @@ EventSphere-Management/
 │   └── routes/  # API endpoints
 │
 ├── frontend/  # React frontend code
-│   ├── src/     # React components and pages
-│   ├── public/  # Static assets
-│   └── package.json
+│   ├── event_sphere/  # main directory
+│       ├── src/     # React components and pages
+│       ├── public/  # Static assets
+│       └── package.json
 │
 └── README.md  # Project documentation
 ```
