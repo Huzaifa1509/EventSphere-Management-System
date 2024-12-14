@@ -1,15 +1,12 @@
 const Expo = require("../Models/Expo");
 const Booth = require("../Models/Booth");
-const Attendee = require("../Models/Attendee");
-// const ExhibitorInteraction = require("../Models/ExhibitorInteraction");
-// const Exhibitor = require("../Models/Exhibitor");
-// const Session = require("../Models/Session");
+const {Attendee, ExhibitorInteraction, Exhibitor, Session}= require("../Models/Attendee");
 const mongoose = require("mongoose");
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-// Expo and Session Management
+//attende register for Expo
 const registerForExpo = async (req, res) => {
   try {
     const ExpoId = req.params.expoId;
@@ -49,147 +46,144 @@ const registerForExpo = async (req, res) => {
   }
 };
 
+//attendee register for session
+const registerForSession = async (req, res) => {
+  try {
 
-// const registerForSession = async (req, res) => {
-//   try {
-//     const { sessionId } = req.body;
-//     const attendeeId = req.user.id;
-
-//     // Find session and attendee
-//     const session = await Session.findById(sessionId).populate("event");
-//     const attendee = await Attendee.findById(attendeeId);
-
-//     if (!session) {
-//       return res.status(404).json({ message: "Session not found" });
-//     }
-
-//     // Check session capacity
-//     if (session.attendees.length >= session.capacity) {
-//       return res.status(400).json({ message: "Session is full" });
-//     }
-
-//     // Check if already registered
-//     if (attendee.sessionsRegistered.includes(sessionId)) {
-//       return res
-//         .status(400)
-//         .json({ message: "Already registered for this session" });
-//     }
-
-//     // Register for session
-//     attendee.sessionsRegistered.push(sessionId);
-//     session.attendees.push(attendeeId);
-
-//     await attendee.save();
-//     await session.save();
-
-//     res.status(200).json({
-//       message: "Successfully registered for session",
-//       session: {
-//         id: session._id,
-//         name: session.name,
-//         event: session.event.name,
-//       },
-//     });
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json({ message: "Session registration failed", error: error.message });
-//   }
-// };
+    const sessionId = req.params.sessionId;
+    const attendeeId = req.user.id;
 
 
+    // Find session and attendee
+    const [session, attendee] = await Promise.all([
+      await Session.findById(sessionId).populate("expo"),
+      await Attendee.findById(attendeeId)
+    ]);
 
-// Bookmark Management
+    if (!session) {
+      return res.status(404).json({ message: "Session not found" });
+    }
 
-// const bookmarkSession = async (req, res) => {
-//   try {
-//     const { sessionId } = req.body;
-//     const attendeeId = req.user.id;
+    // Check session capacity
+    if (session.attendees.length >= session.capacity) {
+      return res.status(400).json({ message: "Session is full" });
+    }
 
-//     // Find session and attendee
-//     const session = await Session.findById(sessionId);
-//     const attendee = await Attendee.findById(attendeeId);
+    // Check if already registered
+    if (attendee.sessionsRegistered.includes(sessionId)) {
+      return res
+        .status(400)
+        .json({ message: "Already registered for this session" });
+    }
 
-//     if (!session) {
-//       return res.status(404).json({ message: "Session not found" });
-//     }
+    // Register for session
+    attendee.sessionsRegistered.push(sessionId);
+    session.attendees.push(attendeeId);
 
-//     // Check if already bookmarked
-//     if (attendee.bookmarkedSessions.includes(sessionId)) {
-//       return res.status(400).json({ message: "Session already bookmarked" });
-//     }
+    await attendee.save();
+    await session.save();
 
-//     // Bookmark session
-//     attendee.bookmarkedSessions.push(sessionId);
-//     await attendee.save();
+    res.status(200).json({
+      message: "Successfully registered for session",
+      session: {
+        id: session._id,
+        name: session.name,
+        event: session.expo.name,
+      },
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Session registration failed", error: error.message });
+  }
+};
 
-//     res.status(200).json({
-//       message: "Session bookmarked successfully",
-//       session: {
-//         id: session._id,
-//         name: session.name,
-//       },
-//     });
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json({ message: "Bookmarking failed", error: error.message });
-//   }
-// };
+//attende bookmark the session
+const bookmarkSession = async (req, res) => {
+  try {
+    const sessionId = req.params.sessionId;
+    const attendeeId = req.user.id;
+
+    // Find session and attendee
+    const [session, attendee] = await Promise.all([
+      await Session.findById(sessionId),
+      await Attendee.findById(attendeeId)
+    ]);
+
+    if (!session) {
+      return res.status(404).json({ message: "Session not found" });
+    }
+
+    // Check if already bookmarked
+    if (attendee.bookmarkedSessions.includes(sessionId)) {
+      return res.status(400).json({ message: "Session already bookmarked" });
+    }
+
+    // Bookmark session
+    attendee.bookmarkedSessions.push(sessionId);
+    await attendee.save();
+
+    res.status(200).json({
+      message: "Session bookmarked successfully",
+      session: {
+        id: session._id,
+        name: session.name,
+      },
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Bookmarking failed", error: error.message });
+  }
+};
 
 // Exhibitor Interaction
+const interactWithExhibitor = async (req, res) => {
+  try {
+    const { exhibitorId, interactionType, notes } = req.body;
+    const attendeeId = req.user.id;
 
-// const interactWithExhibitor = async (req, res) => {
-//   try {
-//     const { exhibitorId, interactionType, notes } = req.body;
-//     const attendeeId = req.user.id;
+    // Find exhibitor and attendee
+    const exhibitor = await Exhibitor.findById(exhibitorId);
+    const attendee = await Attendee.findById(attendeeId);
 
-//     // Find exhibitor and attendee
-//     const exhibitor = await Exhibitor.findById(exhibitorId);
-//     const attendee = await Attendee.findById(attendeeId);
+    if (!exhibitor) {
+      return res.status(404).json({ message: "Exhibitor not found" });
+    }
 
-//     if (!exhibitor) {
-//       return res.status(404).json({ message: "Exhibitor not found" });
-//     }
+    // Create interaction
+    const interaction = new ExhibitorInteraction({
+      attendee: attendeeId,
+      exhibitor: exhibitorId,
+      interactionType,
+      notes,
+    });
 
-//     // Create interaction
-//     const interaction = new ExhibitorInteraction({
-//       attendee: attendeeId,
-//       exhibitor: exhibitorId,
-//       interactionType,
-//       notes,
-//     });
+    await interaction.save();
 
-//     await interaction.save();
+    // Add to attendee and exhibitor interactions
+    attendee.exhibitorInteractions.push(interaction._id);
+    exhibitor.interactions.push(interaction._id);
 
-//     // Add to attendee and exhibitor interactions
-//     attendee.exhibitorInteractions.push(interaction._id);
-//     exhibitor.interactions.push(interaction._id);
+    await attendee.save();
+    await exhibitor.save();
 
-//     await attendee.save();
-//     await exhibitor.save();
-
-//     res.status(200).json({
-//       message: "Exhibitor interaction recorded",
-//       interaction: {
-//         id: interaction._id,
-//         exhibitor: exhibitor.name,
-//         type: interaction.interactionType,
-//       },
-//     });
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json({ message: "Interaction failed", error: error.message });
-//   }
-// };
-
-// Profile Management
-
-
+    res.status(200).json({
+      message: "Exhibitor interaction recorded",
+      interaction: {
+        id: interaction._id,
+        exhibitor: exhibitor.name,
+        type: interaction.interactionType,
+      },
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Interaction failed", error: error.message });
+  }
+};
 
 // Notification Preferences
-
 const updateNotificationPreferences = async (req, res) => {
   try {
     const attendeeId = req.user.id;
@@ -226,22 +220,26 @@ const getUserSchedule = async (req, res) => {
     // Populate registered events and sessions
     const attendee = await Attendee.findById(attendeeId)
       .populate({
-        path: "eventsRegistered",
+        path: "exposRegistered",
         select: "name startDate endDate location",
+        populate:{
+          path: "expo",
+          select: "name"
+        }
       })
       .populate({
         path: "sessionsRegistered",
-        select: "name startTime endTime room speaker event",
+        select: "name startTime endTime floor expo",
         populate: {
-          path: "event",
+          path: "expo",
           select: "name",
         },
       })
       .populate({
         path: "bookmarkedSessions",
-        select: "name startTime endTime room speaker event",
+        select: "name startTime endTime floor expo",
         populate: {
-          path: "event",
+          path: "expo",
           select: "name",
         },
       });
@@ -258,12 +256,57 @@ const getUserSchedule = async (req, res) => {
   }
 };
 
+const registerExhibitor = async (req, res) => {
+  try {
+    // Extract data from the request body
+    const { name, description, boothNumber, contactEmail } = req.body;
+
+    // Validate required fields
+    if (!name || !contactEmail) {
+      return res.status(400).json({
+        error: "Name and contact email are required."
+      });
+    }
+
+    // Create a new exhibitor instance
+    const exhibitor = new Exhibitor({
+      name,
+      description,
+      boothNumber,
+      contactEmail
+    });
+
+    // Save the exhibitor to the database
+    const savedExhibitor = await exhibitor.save();
+
+    // Respond with the newly created exhibitor
+    return res.status(201).json({
+      message: "Exhibitor registered successfully.",
+      exhibitor: savedExhibitor
+    });
+  } catch (error) {
+    console.error("Error registering exhibitor:", error);
+
+    // Handle validation errors or other issues
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        error: error.message
+      });
+    }
+
+    // Respond with a generic server error
+    return res.status(500).json({
+      error: "An error occurred while registering the exhibitor."
+    });
+  }
+};
+
 module.exports = {
   getUserSchedule,
   updateNotificationPreferences,
-  // updateProfile,
-  // interactWithExhibitor,
-  // bookmarkSession,
+  interactWithExhibitor,
+  bookmarkSession,
   registerForExpo,
-  // registerForSession,
+  registerForSession,
+  registerExhibitor
 };

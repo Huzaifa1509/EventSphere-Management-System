@@ -35,8 +35,12 @@ app.get('/api/expos/:expoId', expoController.getExpoById); /// to get a specific
 app.delete('/api/expos/:expoId', expoController.deleteExpo); //to delete an Expo
 
 //Attende routes
-app.post('/registerForExpo/:expoId',protect, AttendeeController.registerForExpo);
-
+app.post('/api/register-for-expo/:expoId',protect, AttendeeController.registerForExpo);
+app.post('/api/register-for-session/:sessionId',protect, AttendeeController.registerForSession);
+app.put('/api/bookmark-session/:sessionId',protect, AttendeeController.bookmarkSession);
+app.post('/api/interact-with-exhibitor', protect, AttendeeController.interactWithExhibitor);
+app.put('/api/update-notification-preferences', protect, AttendeeController.updateNotificationPreferences);
+app.get('/api/user-schedule', protect, AttendeeController.getUserSchedule);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
