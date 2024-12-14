@@ -18,19 +18,20 @@ const formSchema = z.object({
   password: z.string().min(2).max(50),
   role: z.string().min(2).max(50).toUpperCase(),
   phone: z.string().min(13).max(14),
-  organization: z.string().min(2).max(50),
+  organization: z.string().min(2).max(50).optional(),
 })
 
 const Register = () => {
   const { toast } = useToast()
   const navigate = useNavigate()
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       email: "",
       password: "",
-      role: "",
+      role: "ATTENDEE",
       phone: "",
       organization: "",
     },
@@ -163,21 +164,23 @@ const Register = () => {
             />
 
 
-            <FormField
-              control={form.control}
-              name='organization'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Organization</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Event Sphere" {...field} />
-                  </FormControl>
+            {/* I only want to display organization field if role is organizer */}
+            {form.watch('role') === 'ORGANIZER' && (
+              <FormField
+                control={form.control}
+                name='organization'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Organization</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Event Sphere" {...field} />
+                    </FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <Button className="w-full bg-white text-black hover:bg-black hover:text-white" type="submit"><Key /> Register</Button>
           </form>
         </Form>
