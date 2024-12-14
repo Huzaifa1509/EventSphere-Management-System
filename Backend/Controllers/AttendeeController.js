@@ -1,5 +1,6 @@
 const Expo = require("../Models/Expo");
 const Booth = require("../Models/Booth");
+const User = require("../Models/User")
 const {Attendee, ExhibitorInteraction, Exhibitor, Session}= require("../Models/Attendee");
 const mongoose = require("mongoose");
 
@@ -10,34 +11,32 @@ const bcrypt = require("bcryptjs");
 const registerForExpo = async (req, res) => {
   try {
     const ExpoId = req.params.expoId;
-    const attendeeId = req.user.userId;
+    const userId = req.user.userId;
 
     // Find Expo and attendee
-    const Expo = await Expo.findById(ExpoId);
-    const attendee = await Attendee.findById(attendeeId);
+    const specificExpo = await Expo.findById(ExpoId);
+    const attendee = await User.findOne({ _id: userId, role: "ATTENDEE" });
 
-    if (!Expo) {
+    if (!specificExpo) {
       return res.status(404).json({ message: "Expo not found" });
     }
 
-    // Check if already registered
-    if (attendee.exposRegistered.includes(ExpoId)) {
-      return res
-        .status(400)
-        .json({ message: "Already registered for this Expo" });
+    if (!attendee) {
+      return res.status(404).json({ message: "Attendee not found" });
     }
 
     // Register for Expo
-    attendee.exposRegistered.push(ExpoId);
-
-    await attendee.save();
+    const newAttendee = await Attendee.create({
+      name: attendee.name,
+      email: attendee.email,
+      phoneNumber: attendee.phone,
+      organization: attendee.organization,
+      exposRegistered: [ExpoId], // Initialize with the Expo ID
+    });
 
     res.status(200).json({
       message: "Successfully registered for Expo",
-      Expo: {
-        id: Expo._id,
-        name: Expo.name,
-      },
+      attendee: newAttendee,
     });
   } catch (error) {
     res
@@ -310,3 +309,7 @@ module.exports = {
   registerForSession,
   registerExhibitor
 };
+
+
+
+//Testing remaining on postman

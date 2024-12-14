@@ -54,18 +54,11 @@ const AttendeeSchema = new mongoose.Schema({
   },
 
   // Professional Information
-  company: {
+  organization: {
     type: String,
     trim: true
   },
-  jobTitle: {
-    type: String,
-    trim: true
-  },
-  industry: {
-    type: String,
-    trim: true
-  },
+
 
   // Event Participation
   exposRegistered: [{
@@ -88,10 +81,6 @@ const AttendeeSchema = new mongoose.Schema({
       default: true
     },
     sms: {
-      type: Boolean,
-      default: false
-    },
-    push: {
       type: Boolean,
       default: false
     }
