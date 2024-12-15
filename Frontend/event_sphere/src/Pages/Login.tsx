@@ -6,8 +6,11 @@ import { Button } from '@/Components/ui/Button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/Components/ui/Form';
 import { Input } from '@/Components/ui/Input'
 import { LogIn } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useToast } from "@/hooks/use-toast"
+import { Toaster } from '@/Components/ui/Toaster';
+import { EncryptStorage } from 'encrypt-storage';
 
 const formSchema = z.object({
   email: z.string().min(5).max(100).regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[cC][oO][mM]$/),
@@ -15,6 +18,15 @@ const formSchema = z.object({
 })
 
 const Login = () => {
+  const { toast } = useToast()
+  const navigate = useNavigate()
+
+  const secretKey = import.meta.env.VITE_SECRET_KEY
+
+  const encryptStorage = new EncryptStorage(secretKey, {
+    localStorage: 'localStorage',
+  });
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -28,7 +40,40 @@ const Login = () => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values)
+    try {
+      axios.post('api/users/login', values)
+        // Encrypt token using EncryptStorage
+        .then(response => {
+          console.log(response.data)
+          if (response.status === 200 && response.data.token) {
+            encryptStorage.setItem('token', response.data.token);
+            encryptStorage.setItem('user', JSON.stringify(response.data.user));
+            toast({
+              variant: "default",
+              title: "Success",
+              description: "You have been logged in successfully",
+            })
+            navigate('/home')
+          }
+        })
+        .catch(error => {
+          console.log(error)
+          console.error("Error: ", error.response.data.message);
+          toast({
+            variant: "default",
+            title: "Error",
+            description: error.response.data.message,
+          })
+        })
 
+    } catch (error) {
+      console.error("Error: ", error.response.data.message);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.response.data.message,
+      })
+    }
   }
   return (
     <>
@@ -42,7 +87,7 @@ const Login = () => {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" {...field} />
+                    <Input placeholder="john.doe@example.com" {...field} />
                   </FormControl>
                   <FormDescription>
                     Please enter your email
@@ -77,6 +122,7 @@ const Login = () => {
         <Link to="/register" className='text-rose-950 mt-5'>Don't have an account?</Link>
 
       </div>
+      <Toaster />
     </>
   )
 }
