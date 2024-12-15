@@ -35,6 +35,10 @@ const SessionSchema = new mongoose.Schema({
 
 // Attendee Schema
 const AttendeeSchema = new mongoose.Schema({
+  AttendeeId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   name: {
     type: String,
     required: true,
@@ -117,7 +121,7 @@ const ExhibitorInteractionSchema = new mongoose.Schema({
   },
   interactionType: {
     type: String,
-    enum: ['chat', 'email', 'meeting', 'booth-visit'],
+    enum: ['chat', 'email', 'booth'],
     required: true
   },
   notes: {
