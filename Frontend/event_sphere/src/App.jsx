@@ -1,13 +1,11 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, Navigate } from 'react-router-dom'
 
-function App() {
+const App = () => {
+
+  const authToken = localStorage.getItem('token');
+  return authToken ? <Outlet /> : <Navigate to="/login" />;
 
 
-  return (
-    <>
-     <Outlet />
-    </>
-  )
 }
 
 export default App
