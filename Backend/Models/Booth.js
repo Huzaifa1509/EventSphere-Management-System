@@ -19,7 +19,6 @@ const boothSchema = new mongoose.Schema({
     type: String, 
     default: null
   }
-
 });
 
 module.exports = mongoose.model("Booth", boothSchema);

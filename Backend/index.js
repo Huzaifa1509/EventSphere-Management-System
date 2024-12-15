@@ -5,6 +5,7 @@ const cors = require("cors");
 const userController = require('./Controllers/UserController');
 const expoController = require('./Controllers/ExpoController'); // Import the Expo controller
 const AttendeeController = require('./Controllers/AttendeeController');
+const BoothController = require('./Controllers/BoothController');
 const protect = require('./Middlewares/token_decode');
 const connectDB = require('./Configuration/db_config');
 
@@ -32,7 +33,16 @@ app.put('/api/users/:userId', userController.updateUser);
 app.post('/api/expos', expoController.createExpo); ///to create an Expo
 app.get('/api/expos', expoController.getAllExpos); //to get all Expos
 app.get('/api/expos/:expoId', expoController.getExpoById); /// to get a specific Expo by ID
-app.delete('/api/expos/:expoId', expoController.deleteExpo); //to delete an Expo
+app.delete('/api/expos/:expoId', expoController.deleteExpo);
+app.put('/api/expos/:expoId', expoController.updateExpo); //to delete an Expo
+
+//Booth routes
+app.post('/api/booths', BoothController.addBooth);
+app.get('/api/booths', BoothController.getAllBooths);
+app.get('/api/booths/:expoId', BoothController.getBoothsByExpo);
+app.put('/api/booths/:boothId', BoothController.updateBooth);
+app.delete('/api/booths/:boothId', BoothController.deleteBooth);
+
 
 //Attende routes
 app.post('/registerForExpo/:expoId',protect, AttendeeController.registerForExpo);
