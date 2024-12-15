@@ -4,6 +4,7 @@ const app = express();
 const cors = require("cors");
 const userController = require('./Controllers/UserController');
 const expoController = require('./Controllers/ExpoController'); // Import the Expo controller
+const exhibitorController = require('./Controllers/ExhibitorController'); 
 const AttendeeController = require('./Controllers/AttendeeController');
 const BoothController = require('./Controllers/BoothController');
 const protect = require('./Middlewares/token_decode');
@@ -47,6 +48,11 @@ app.delete('/api/booths/:boothId', BoothController.deleteBooth);
 //Attende routes
 app.post('/registerForExpo/:expoId',protect, AttendeeController.registerForExpo);
 
+// Exhibitor routes
+app.post('/api/exhibitor', exhibitorController.createExhibitor); ///to create an Expo
+// app.get('/api/exhibitor', expoController.getAllExpos); //to get all Expos
+// app.get('/api/exhibitor/:exhibitorId', expoController.getExpoById); /// to get a specific Expo by ID
+// app.delete('/api/exhibitor/:exhibitorId', expoController.deleteExpo); //to delete an Expo
 
 // Start the server
 const PORT = process.env.PORT || 5000;
