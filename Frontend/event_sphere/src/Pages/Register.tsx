@@ -54,7 +54,7 @@ const Register = () => {
               title: "Success",
               description: "You have been registered successfully",
             })
-            navigate('/home')
+            navigate('/dashboard')
           }
         })
         .catch(error => {

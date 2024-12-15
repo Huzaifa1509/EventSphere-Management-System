@@ -5,30 +5,27 @@ import App from './App.jsx'
 import Login from './Pages/Login.tsx'
 import Register from './Pages/Register.tsx'
 import ForgetPassword from './Pages/ForgetPassword.tsx'
-import Home from './Pages/Home.jsx'
+import Dashboard from './Pages/Dashboard.tsx'
+import Exhibitor from './Pages/Exhibitor.tsx'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
-import { EncryptStorage } from 'encrypt-storage'
+import ProtectedRoute from './ProtectedRoute.jsx'
 
 
-
-const encryptStorage = new EncryptStorage(import.meta.env.VITE_SECRET_KEY, {
-  localStorage: 'localStorage',
-});
-
-const value = encryptStorage.getItem('token');
 const router = createBrowserRouter(
 
   createRoutesFromElements(
-    
+    <>
     <Route path="/" element={<App />}>
       <Route index element={<Login />} />
       <Route path="register" element={<Register />} />
       <Route path="forget-password" element={<ForgetPassword />} />
-      <Route path="home" element={<Home />} />
       <Route path="exhibitor" element={<Exhibitor />} />
-
     </Route>
 
+    <Route path="/dashboard" element={<ProtectedRoute />}>
+      <Route index element={<Dashboard />} />
+    </Route>
+  </>
   )
 )
 

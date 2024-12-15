@@ -53,7 +53,7 @@ const Login = () => {
               title: "Success",
               description: "You have been logged in successfully",
             })
-            navigate('/home')
+            navigate('/dashboard')
           }
         })
         .catch(error => {
