@@ -11,7 +11,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios'
 import { useToast } from "@/hooks/use-toast"
 import { Toaster } from '@/Components/ui/Toaster';
-import { Textarea } from "@/components/ui/textarea"
+import { Textarea } from "@/Components/ui/Textarea"
 
 
 const formSchema = z.object({
