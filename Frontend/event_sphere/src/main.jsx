@@ -26,10 +26,10 @@ const router = createBrowserRouter(
       <Route index element={<Login />} />
       <Route path="register" element={  <Register />} />
       <Route path="forget-password" element={<ForgetPassword />} />
-main
+
       <Route path="exhibitor" element={<Exhibitor />} />
       <Route path="expoevents" element={<CreateExpoEvent />} />
- main
+ 
     </Route>
     
 
