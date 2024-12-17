@@ -1,269 +1,348 @@
 const Expo = require("../Models/Expo");
 const Booth = require("../Models/Booth");
-const Attendee = require("../Models/Attendee");
-// const ExhibitorInteraction = require("../Models/ExhibitorInteraction");
-// const Exhibitor = require("../Models/Exhibitor");
-// const Session = require("../Models/Session");
+const User = require("../Models/User")
+const {Attendee, ExhibitorInteraction, Exhibitor, Session}= require("../Models/Attendee");
 const mongoose = require("mongoose");
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-// Expo and Session Management
+//attende register for Expo
 const registerForExpo = async (req, res) => {
   try {
-    const ExpoId = req.params.expoId;
-    const attendeeId = req.user.userId;
+    const { expoId } = req.params; // Destructure expoId from request params
+    const { userId } = req.user;   // Extract userId from request user object
 
-    // Find Expo and attendee
-    const Expo = await Expo.findById(ExpoId);
-    const attendee = await Attendee.findById(attendeeId);
+    // Validate required inputs
+    if (!expoId || !userId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: !expoId ? "Expo ID is required" : "User ID is missing" 
+      });
+    }
 
-    if (!Expo) {
-      return res.status(404).json({ message: "Expo not found" });
+    // Fetch Expo and User details in parallel
+    const [specificExpo, attendee] = await Promise.all([
+      Expo.findById(expoId),
+      User.findOne({ _id: userId, role: "ATTENDEE" }),
+    ]);
+
+    if (!specificExpo) {
+      return res.status(404).json({ success: false, message: "Expo not found" });
+    }
+
+    if (!attendee) {
+      return res.status(404).json({ success: false, message: "Attendee not found" });
+    }
+
+    // Check if attendee exists and is already registered for the expo
+    const specificAttendee = await Attendee.findOne({ AttendeeId: userId });
+
+    if (specificAttendee?.exposRegistered.includes(expoId)) {
+      return res.status(409).json({ 
+        success: false, 
+        message: "You have already registered for this Expo" 
+      });
+    }
+
+    // Register the attendee
+    let attendeeResponse;
+    if (specificAttendee) {
+      // Add the expoId to existing attendee
+      specificAttendee.exposRegistered.push(expoId);
+      attendeeResponse = await specificAttendee.save();
+    } else {
+      // Create a new attendee record
+      attendeeResponse = await Attendee.create({
+        AttendeeId: attendee._id,
+        name: attendee.name,
+        email: attendee.email,
+        phoneNumber: attendee.phoneNumber,
+        organization: attendee.organization,
+        exposRegistered: [expoId],
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Successfully registered for Expo",
+      attendee: attendeeResponse,
+    });
+  } catch (error) {
+    // Handle specific errors (e.g., invalid ObjectId)
+    const statusCode = error.name === "CastError" ? 400 : 500;
+    return res.status(statusCode).json({
+      success: false,
+      message: statusCode === 400 ? "Invalid Expo ID" : "Expo registration failed",
+      error: error.message,
+    });
+  }
+};
+
+
+//attendee register for session
+const registerForSession = async (req, res) => {
+  try {
+    const { sessionId } = req.params; // Destructure sessionId from params
+    const { userId } = req.user; // Extract attendeeId from req.user
+
+    // Validate inputs
+    if (!sessionId || !userId) {
+      return res.status(400).json({ 
+        message: !sessionId ? "Session ID is required" : "User ID is missing" 
+      });
+    }
+
+    // Find session and attendee in parallel
+    const [session, attendee] = await Promise.all([
+      Session.findById(sessionId).populate({
+        path: "Expo",
+        strictPopulate: false,
+      }),
+      Attendee.findOne({AttendeeId: userId}),
+    ]);
+
+    if (!session) {
+      return res.status(404).json({ message: "Session not found" });
+    }
+
+    if (!attendee) {
+      return res.status(404).json({ message: "Attendee not found" });
+    }
+
+    const registeredAttendeesCount = await Attendee.countDocuments({
+      sessionsRegistered: sessionId,
+    });
+
+    // Check session capacity
+    if (registeredAttendeesCount >= session.capacity) {
+      return res.status(400).json({ message: "Session is full" });
     }
 
     // Check if already registered
-    if (attendee.exposRegistered.includes(ExpoId)) {
-      return res
-        .status(400)
-        .json({ message: "Already registered for this Expo" });
+    if (attendee.sessionsRegistered.includes(sessionId)) {
+      return res.status(409).json({ message: "Already registered for this session" });
     }
 
-    // Register for Expo
-    attendee.exposRegistered.push(ExpoId);
+    // Register attendee for the session
+    attendee.sessionsRegistered.push(sessionId);
 
+    // Save both documents in parallel
+    await Promise.all([attendee.save(), session.save()]);
+
+    return res.status(200).json({
+      message: "Successfully registered for session",
+      session: {
+        id: session._id,
+        name: session.name,
+        expo: session.expo.name,
+      },
+    });
+  } catch (error) {
+    // Handle specific errors
+    const statusCode = error.name === "CastError" ? 400 : 500;
+    return res.status(statusCode).json({
+      message: statusCode === 400 ? "Invalid Session ID" : "Session registration failed",
+      error: error.message,
+    });
+  }
+};
+
+
+//attende bookmark the session
+const bookmarkSession = async (req, res) => {
+  try {
+    const { sessionId } = req.params; // Extract session ID from request params
+    const { userId } = req.user; // Extract attendee ID from user object
+
+    // Validate input
+    if (!sessionId || !userId) {
+      return res.status(400).json({
+        message: !sessionId ? "Session ID is required" : "Attendee ID is missing",
+      });
+    }
+
+    // Fetch session and attendee concurrently
+    const [session, attendee] = await Promise.all([
+      Session.findById(sessionId),
+      Attendee.findOne({AttendeeId: userId}),
+    ]);
+
+    // Validate session and attendee existence
+    if (!session) {
+      return res.status(404).json({ message: "Session not found" });
+    }
+
+    if (!attendee) {
+      return res.status(404).json({ message: "Attendee not found" });
+    }
+
+    // Check if already bookmarked
+    if (attendee.bookmarkedSessions.includes(sessionId)) {
+      return res.status(409).json({ message: "Session already bookmarked" });
+    }
+
+    // Bookmark the session
+    attendee.bookmarkedSessions.push(sessionId);
     await attendee.save();
 
+    // Respond with success
+    return res.status(200).json({
+      message: "Session bookmarked successfully",
+      session: {
+        id: session._id,
+        name: session.name,
+      },
+    });
+  } catch (error) {
+    // Handle errors
+    const statusCode = error.name === "CastError" ? 400 : 500;
+    return res.status(statusCode).json({
+      message: statusCode === 400 ? "Invalid Session ID" : "Bookmarking failed",
+      error: error.message,
+    });
+  }
+};
+
+// Exhibitor Interaction
+const interactWithExhibitor = async (req, res) => {
+  try {
+    const { exhibitorId, interactionType, notes } = req.body;
+    const attendeeId = req.user.userId;
+
+    // Find exhibitor and attendee
+    const exhibitor = await Exhibitor.findById(exhibitorId);
+    const attendee = await Attendee.findOne({AttendeeId: attendeeId});
+
+    if (!exhibitor) {
+      return res.status(404).json({ message: "Exhibitor not found" });
+    }
+
+    // Create interaction
+    const interaction = new ExhibitorInteraction({
+      attendee: attendeeId,
+      exhibitor: exhibitorId,
+      interactionType,
+      notes,
+    });
+
+    await interaction.save();
+
+    // Add to attendee and exhibitor interactions
+    attendee.exhibitorInteractions.push(exhibitorId);
+    exhibitor.interactions.push(interaction._id); 
+
+    await attendee.save();
+    await exhibitor.save();
+
     res.status(200).json({
-      message: "Successfully registered for Expo",
-      Expo: {
-        id: Expo._id,
-        name: Expo.name,
+      message: "Exhibitor interaction recorded",
+      interaction: {
+        id: interaction._id,
+        exhibitor: exhibitor.name,
+        type: interaction.interactionType,
       },
     });
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Expo registration failed", error: error.message });
+      .json({ message: "Interaction failed", error: error.message });
   }
 };
 
-
-// const registerForSession = async (req, res) => {
-//   try {
-//     const { sessionId } = req.body;
-//     const attendeeId = req.user.id;
-
-//     // Find session and attendee
-//     const session = await Session.findById(sessionId).populate("event");
-//     const attendee = await Attendee.findById(attendeeId);
-
-//     if (!session) {
-//       return res.status(404).json({ message: "Session not found" });
-//     }
-
-//     // Check session capacity
-//     if (session.attendees.length >= session.capacity) {
-//       return res.status(400).json({ message: "Session is full" });
-//     }
-
-//     // Check if already registered
-//     if (attendee.sessionsRegistered.includes(sessionId)) {
-//       return res
-//         .status(400)
-//         .json({ message: "Already registered for this session" });
-//     }
-
-//     // Register for session
-//     attendee.sessionsRegistered.push(sessionId);
-//     session.attendees.push(attendeeId);
-
-//     await attendee.save();
-//     await session.save();
-
-//     res.status(200).json({
-//       message: "Successfully registered for session",
-//       session: {
-//         id: session._id,
-//         name: session.name,
-//         event: session.event.name,
-//       },
-//     });
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json({ message: "Session registration failed", error: error.message });
-//   }
-// };
-
-
-
-// Bookmark Management
-
-// const bookmarkSession = async (req, res) => {
-//   try {
-//     const { sessionId } = req.body;
-//     const attendeeId = req.user.id;
-
-//     // Find session and attendee
-//     const session = await Session.findById(sessionId);
-//     const attendee = await Attendee.findById(attendeeId);
-
-//     if (!session) {
-//       return res.status(404).json({ message: "Session not found" });
-//     }
-
-//     // Check if already bookmarked
-//     if (attendee.bookmarkedSessions.includes(sessionId)) {
-//       return res.status(400).json({ message: "Session already bookmarked" });
-//     }
-
-//     // Bookmark session
-//     attendee.bookmarkedSessions.push(sessionId);
-//     await attendee.save();
-
-//     res.status(200).json({
-//       message: "Session bookmarked successfully",
-//       session: {
-//         id: session._id,
-//         name: session.name,
-//       },
-//     });
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json({ message: "Bookmarking failed", error: error.message });
-//   }
-// };
-
-// Exhibitor Interaction
-
-// const interactWithExhibitor = async (req, res) => {
-//   try {
-//     const { exhibitorId, interactionType, notes } = req.body;
-//     const attendeeId = req.user.id;
-
-//     // Find exhibitor and attendee
-//     const exhibitor = await Exhibitor.findById(exhibitorId);
-//     const attendee = await Attendee.findById(attendeeId);
-
-//     if (!exhibitor) {
-//       return res.status(404).json({ message: "Exhibitor not found" });
-//     }
-
-//     // Create interaction
-//     const interaction = new ExhibitorInteraction({
-//       attendee: attendeeId,
-//       exhibitor: exhibitorId,
-//       interactionType,
-//       notes,
-//     });
-
-//     await interaction.save();
-
-//     // Add to attendee and exhibitor interactions
-//     attendee.exhibitorInteractions.push(interaction._id);
-//     exhibitor.interactions.push(interaction._id);
-
-//     await attendee.save();
-//     await exhibitor.save();
-
-//     res.status(200).json({
-//       message: "Exhibitor interaction recorded",
-//       interaction: {
-//         id: interaction._id,
-//         exhibitor: exhibitor.name,
-//         type: interaction.interactionType,
-//       },
-//     });
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json({ message: "Interaction failed", error: error.message });
-//   }
-// };
-
-// Profile Management
-
-
-
 // Notification Preferences
-
 const updateNotificationPreferences = async (req, res) => {
   try {
-    const attendeeId = req.user.id;
-    const { email, sms, push } = req.body;
+    const attendeeId = req.user.userId;
+    const { email, sms} = req.body;
 
-    const updatedAttendee = await Attendee.findByIdAndUpdate(
-      attendeeId,
+    // Validate that email, sms, and push are provided and are booleans
+    if (typeof email !== 'boolean' || typeof sms !== 'boolean') {
+      return res.status(400).json({
+        message: "Invalid data format. 'email', 'sms' must be boolean values."
+      });
+    }
+
+    // Find and update attendee notification preferences
+    const updatedAttendee = await Attendee.findOneAndUpdate(
+      {AttendeeId: attendeeId},
       {
         "notificationPreferences.email": email,
         "notificationPreferences.sms": sms,
-        "notificationPreferences.push": push,
       },
-      { new: true }
+      { new: true } // Return the updated document
     );
 
     if (!updatedAttendee) {
       return res.status(404).json({ message: "Attendee not found" });
     }
 
+    // Respond with success message and the updated notification preferences
     res.json({
-      message: "Notification preferences updated",
+      message: "Notification preferences updated successfully",
       notificationPreferences: updatedAttendee.notificationPreferences,
     });
   } catch (error) {
-    res.status(500).json({ message: "Update failed", error: error.message });
+    // Handle any unexpected errors
+    console.error(error); // Log the error for debugging
+    res.status(500).json({
+      message: "Update failed",
+      error: error.message,
+    });
   }
 };
 
 // Get User Schedule
 const getUserSchedule = async (req, res) => {
   try {
-    const attendeeId = req.user.id;
+    const attendeeId = req.user.userId;
 
-    // Populate registered events and sessions
-    const attendee = await Attendee.findById(attendeeId)
+    // Find attendee and populate references
+    const attendee = await Attendee.findOne({ AttendeeId: attendeeId })
       .populate({
-        path: "eventsRegistered",
-        select: "name startDate endDate location",
+        path: "exposRegistered",
+        select: "name startDate endDate location", // Fields in the Expo schema
       })
       .populate({
         path: "sessionsRegistered",
-        select: "name startTime endTime room speaker event",
-        populate: {
-          path: "event",
-          select: "name",
-        },
+        select: "name startTime endTime floor expo",
       })
       .populate({
         path: "bookmarkedSessions",
-        select: "name startTime endTime room speaker event",
-        populate: {
-          path: "event",
-          select: "name",
-        },
+        select: "name startTime endTime floor expo",
       });
 
+    // Check if attendee exists
+    if (!attendee) {
+      return res.status(404).json({ message: "Attendee not found" });
+    }
+
+    // Return structured response
     res.json({
-      eventsRegistered: attendee.eventsRegistered,
+      eventsRegistered: attendee.exposRegistered,
       sessionsRegistered: attendee.sessionsRegistered,
       bookmarkedSessions: attendee.bookmarkedSessions,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Could not retrieve schedule", error: error.message });
+    console.error(error);
+    res.status(500).json({
+      message: "Could not retrieve schedule",
+      error: error.message,
+    });
   }
 };
+
+
 
 module.exports = {
   getUserSchedule,
   updateNotificationPreferences,
-  // updateProfile,
-  // interactWithExhibitor,
-  // bookmarkSession,
+  interactWithExhibitor,
+  bookmarkSession,
   registerForExpo,
-  // registerForSession,
+  registerForSession
 };
+
+
+
+//Testing remaining on postman
