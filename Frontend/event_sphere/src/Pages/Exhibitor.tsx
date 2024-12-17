@@ -20,6 +20,9 @@ const formSchema = z.object({
     productName: z.string().min(2).max(50),
     productDescription: z.string().max(500).toLowerCase(),
     services: z.string().max(50),
+    requireDocument: z
+    .instanceof(File, { message: "A valid file is required." })
+    .or(z.any()),
   })
   
  
@@ -35,6 +38,7 @@ const Exhibitor = () => {
         productName: "",
         productDescription: "",
         services: "",
+        requireDocument:""
       },
     })
   
@@ -73,7 +77,7 @@ const Exhibitor = () => {
   
         <div className="flex flex-col items-center justify-center h-screen">
           <Form {...form}>
-            <form method='post' onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full bg-slate-900 text-white p-12">
+            <form method='post' onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full bg-slate-900 text-white p-12" encType="multipart/form-data">
   
               <FormField
   
@@ -209,20 +213,20 @@ const Exhibitor = () => {
                 )}
               />
   
-              {/* <FormField
+              <FormField
                 control={form.control}
                 name='requireDocument'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Official Document</FormLabel>
                     <FormControl>
-                      <Input placeholder="+12345678910" type='file' {...field} />
+                      <Input placeholder="Please Insert Your Document" type='file' {...field} />
                     </FormControl>
   
                     <FormMessage />
                   </FormItem>
                 )}
-              /> */}
+              />
               <Button className="bg-white text-black hover:bg-black hover:text-white" type="submit"><Send /> Save</Button>
             </form>
           </Form>
