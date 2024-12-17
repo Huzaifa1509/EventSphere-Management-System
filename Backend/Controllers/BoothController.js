@@ -4,35 +4,46 @@ const mongoose = require("mongoose");
 
 
 const addBooth = async (req, res) => {
-  const { boothNumber, expoId } = req.body;
-
-
-  if (!boothNumber || boothNumber.trim() === '') {
-    return res.status(400).json({ message: "Booth number is required" });
-  }
-  if (!expoId || !mongoose.Types.ObjectId.isValid(expoId)) {
-    return res.status(400).json({ message: "Valid expo ID is required" });
-  }
-
-  try {
-    const expo = await Expo.findById(expoId);
-    if (!expo) {
-      return res.status(404).json({ message: "Expo not found" });
+    const { boothNumber, expoId } = req.body;
+  
+    if (!boothNumber || boothNumber.trim() === '') {
+      return res.status(400).json({ message: "Booth number is required" });
     }
-    const existingBooth = await Booth.findOne({ boothNumber, expoId });
-    if (existingBooth) {
-      return res.status(400).json({ message: "Booth number already exists in this expo" });
+    if (!expoId || !mongoose.Types.ObjectId.isValid(expoId)) {
+      return res.status(400).json({ message: "Valid expo ID is required" });
     }
-    const newBooth = await Booth.create({ boothNumber, expoId });
-    expo.booths.push(newBooth._id);
-    await expo.save();
-
-    return res.status(201).json({ message: "Booth added successfully", booth: newBooth });
-  } catch (error) {
-    console.error("Error adding booth:", error);
-    return res.status(500).json({ message: "An error occurred while adding the booth", error: error.message });
-  }
-};
+  
+    try {
+      const boothExists = await Booth.findOne({ boothNumber });
+      if (boothExists) {
+        return res.status(400).json({
+          message: `A booth with number ${boothNumber} already exists.`,
+        });
+      }
+  
+      const expo = await Expo.findById(expoId);
+      if (!expo) {
+        return res.status(404).json({ message: "Expo not found" });
+      }
+  
+      const newBooth = await Booth.create({ boothNumber, expoId });
+  
+      expo.booths.push(newBooth._id);
+      await expo.save();
+  
+      return res.status(201).json({
+        message: "Booth added successfully",
+        booth: newBooth,
+      });
+    } catch (error) {
+      console.error("Error adding booth:", error);
+      return res.status(500).json({
+        message: "An error occurred while adding the booth",
+        error: error.message,
+      });
+    }
+  };
+  
 
 
 const getAllBooths = async (req, res) => {

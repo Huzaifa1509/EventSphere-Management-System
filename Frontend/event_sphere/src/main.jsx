@@ -8,6 +8,8 @@ import ForgetPassword from './Pages/ForgetPassword.tsx'
 import Dashboard from './Pages/Dashboard.tsx'
 import Exhibitor from './Pages/Exhibitor.tsx'
 import CreateExpoEvent from './Pages/CreateExpoEvent.tsx'
+import CreateBooth from './Pages/CreateBooth.tsx'
+import ShowAllBooth from './Pages/ShowAllBooth.tsx'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, Navigate } from 'react-router-dom'
 import ProtectedRoute from './ProtectedRoute.jsx'
 import { EncryptStorage } from 'encrypt-storage';
@@ -36,6 +38,9 @@ const router = createBrowserRouter(
       <Route path="exhibitor" element={<Exhibitor />} />
     <Route path="/dashboard" element={<ProtectedRoute />}>
       <Route index element={<Dashboard />} />
+      <Route path="expoevents" element={<CreateExpoEvent />} />
+      <Route path="booth" element={<CreateBooth />} />
+      <Route path="allbooths" element={<ShowAllBooth />} />
     </Route>
   </>
   )
