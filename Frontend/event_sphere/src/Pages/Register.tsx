@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '@/Components/ui/Button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/Components/ui/Form';
 import { Input } from '@/Components/ui/Input'
 import { Key } from 'lucide-react';
@@ -11,7 +11,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios'
 import { useToast } from "@/hooks/use-toast"
 import { Toaster } from '@/Components/ui/Toaster';
-import { EncryptStorage } from 'encrypt-storage';
+// import { AsyncEncryptStorage } from 'encrypt-storage';
 
 const formSchema = z.object({
   name: z.string().min(5).max(50),
@@ -19,12 +19,13 @@ const formSchema = z.object({
   password: z.string().min(2).max(50),
   role: z.string().min(2).max(50).toUpperCase(),
   phone: z.string().min(13).max(14),
-  organization: z.string().min(2).max(50).optional(),
+  organization: z.string().optional(),
 })
 
 const Register = () => {
   const { toast } = useToast()
   const navigate = useNavigate()
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -38,32 +39,42 @@ const Register = () => {
     },
   })
 
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+
     console.log(values)
 
+
+    // const encryptStorage = new AsyncEncryptStorage('eventSphere', {
+    //   localStorage: 'localStorage',
+    //   expirationTime: 1800000, // 30mins
+    // });
+
     try {
-      axios.post('api/users', values)
+      axios.post('/api/verify', { email: values.email, name: values.name })
         .then(response => {
           console.log(response.data);
-          if (response.status === 201 && response.data.token) {
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
+          if (response.status === 200 && response.data.otp) {
+            console.log(response.data.otp);
+            // encryptStorage.setItem('tmp_user', JSON.stringify(values));
+            // encryptStorage.setItem('otp', response.data.otp);
+            localStorage.setItem('tmp_user', JSON.stringify(values));
+            localStorage.setItem('otp', response.data.otp);
             toast({
               variant: "default",
               title: "Success",
-              description: "You have been registered successfully",
+              description: "Code has been sent to your email. Please verify in the next 30 minutes",
             })
-            navigate('/dashboard')
+            // navigate('/dashboard')
           }
+
         })
         .catch(error => {
-          console.error("Error: ", error.response.data.message);
+          console.error("Error: ", error.response?.data.message);
           toast({
             variant: "destructive",
             title: "Error",
-            description: error.response.data.message,
+            description: error.response?.data.message,
           })
         });
     } catch (error) {

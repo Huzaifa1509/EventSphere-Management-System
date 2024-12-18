@@ -7,8 +7,11 @@ const expoController = require('./Controllers/ExpoController'); // Import the Ex
 const exhibitorController = require('./Controllers/ExhibitorController'); 
 const AttendeeController = require('./Controllers/AttendeeController');
 const BoothController = require('./Controllers/BoothController');
+const {verifyOTP} = require('./Controllers/VerifyController')
+const {uploadImageHandler} = require("./Middlewares/UploadImageHandler")
 const protect = require('./Middlewares/token_decode');
 const connectDB = require('./Configuration/db_config');
+const upload = uploadImageHandler();
 
 // CORS options
 const corsOptions = {
@@ -29,6 +32,9 @@ app.delete('/api/users/:userId', userController.deleteUser);
 app.post('/api/users/login', userController.loginUser);
 app.get('/api/users/profile', protect, userController.getProfile);
 app.put('/api/users/:userId', userController.updateUser);
+
+// Verify routes
+app.post('/api/verify', verifyOTP);
 
 // Expo routes
 app.post('/api/expos', expoController.createExpo); ///to create an Expo
@@ -55,7 +61,7 @@ app.get('/api/user-schedule', protect, AttendeeController.getUserSchedule);
 
 
 // Exhibitor routes
-app.post('/api/exhibitor', exhibitorController.createExhibitor); ///to create an Expo
+app.post('/api/exhibitor',upload.single('requireDocument') , exhibitorController.createExhibitor); ///to create an Expo
 // app.get('/api/exhibitor', expoController.getAllExpos); //to get all Expos
 // app.get('/api/exhibitor/:exhibitorId', expoController.getExpoById); /// to get a specific Expo by ID
 // app.delete('/api/exhibitor/:exhibitorId', expoController.deleteExpo); //to delete an Expo

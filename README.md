@@ -61,7 +61,7 @@ EventSphere-Management/
    npm install
    ```
 
-4. **Configure environment variables**:  
+4. **Configure environment variables for backend**:  
    Create a `.env` file in the `backend/` directory:
    ```env
    PORT=5000
@@ -73,36 +73,43 @@ EventSphere-Management/
    SMTP_PORT=your_smtp_host
    ```
 
-5. **Start the backend server**:
+5. **Configure environment variables for frontend**:  
+   Create a `.env` file in the `frontend/event_sphere` directory:
+   ```env
+   VITE_SECRET_KEY=your_secret_key
+   ```
+
+6. **Start the backend server**:
    ```bash
    cd backend
    npm start
    ```
 
-6. **Start the frontend server**:
+7. **Start the frontend server**:
    ```bash
    cd frontend
    npm run dev
    ```
 
-7. **Open your browser**:
+8. **Open your browser**:
    ```
    copy the url from the terminal where you've started the frontend server
    ```
 
 ---
 
-### 📜 Environment Variables
+### 📜Total Environment Variables
 
-| Variable        | Description                       |
-|-----------------|-----------------------------------|
-| `PORT`          | Backend server port               |
-| `MONGO_URI`     | MongoDB connection string         |
-| `JWT_SECRET`    | Secret for JSON Web Tokens (JWTs) |
-| `SMTP_USER`     | SMTP account username             |
-| `SMTP_PASS`     | SMTP account password             |
-| `SMTP_HOSTNAME` | SMTP hostname                     |
-| `SMTP_PORT`     | SMTP port                         |
+| Variable           | Description                                 |
+|--------------------|---------------------------------------------|
+| `PORT`             | Backend server port (Backend)               |
+| `MONGO_URI`        | MongoDB connection string (Backend)         |
+| `JWT_SECRET`       | Secret for JSON Web Tokens (JWTs) (Backend) |
+| `SMTP_USER`        | SMTP account username (Backend)             |
+| `SMTP_PASS`        | SMTP account password (Backend)             |
+| `SMTP_HOSTNAME`    | SMTP hostname (Backend)                     |
+| `SMTP_PORT`        | SMTP port (Backend)                         |
+| `VITE_SECRET_KEY`  | Secret Key For Local Storage Encryption     |
 
 ---
 

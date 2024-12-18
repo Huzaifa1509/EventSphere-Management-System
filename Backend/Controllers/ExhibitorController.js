@@ -3,37 +3,53 @@ const Booth = require("../Models/Booth");
 const mongoose = require("mongoose");
 
 const createExhibitor = async (req, res) => {
-    const { companyName, companyDescription, productName, productDescription, services, requireDocument} = req.body;
-  
-    if (!companyName || companyName.trim() === '') {
-      return res.status(400).json({ message: "Company name is required" });
+  const { companyName, companyDescription, productName, productDescription, services } = req.body;
+
+  // Check required fields
+  if (!companyName || companyName.trim() === '') {
+    return res.status(400).json({ message: "Company name is required" });
+  }
+  if (!productName || productName.trim() === '') {
+    return res.status(400).json({ message: "Product name is required" });
+  }
+  if (!services || services.trim() === '') {
+    return res.status(400).json({ message: "Service is required" });
+  }
+
+  try {
+    // Retrieve uploaded file URL from Cloudinary
+    let requireDocumentUrl = null;
+    if (req.file) {
+      requireDocumentUrl = req.file.path; // Uploaded file URL
+    } else {
+      return res.status(400).json({ message: "Require Document (file) is missing" });
     }
-    if (!productName || productName.trim() === '') {
-      return res.status(400).json({ message: "Product name is required" });
-    }
-    if (!services || services.trim() === '') {
-      return res.status(400).json({ message: "service is required" });
-    }
-    try {
-      // Create the Exhibitor Company/Org
-      const newExhibitor = await Exhibitor.create({
-        companyName,
-        companyDescription,
-        productName,
-        productDescription,
-        services,
-        // requireDocument,
-        // booths
-      });
-  
-      await newExhibitor.save();
-  
-      return res.status(201).json({ message: "Company Created Successfully", exhibitor: newExhibitor });
-    } catch (error) {
-      console.error("Error creating company:", error);
-      return res.status(500).json({ message: "An error occurred while creating the company", error: error.message });
-    }
-  };
+
+    // Create the Exhibitor Company/Org
+    const newExhibitor = await Exhibitor.create({
+      companyName,
+      companyDescription,
+      productName,
+      productDescription,
+      services,
+      requireDocument: requireDocumentUrl, // Save file URL in the database
+    });
+
+    await newExhibitor.save();
+
+    return res.status(201).json({
+      message: "Company Created Successfully",
+      exhibitor: newExhibitor,
+    });
+  } catch (error) {
+    console.error("Error creating company:", error);
+    return res.status(500).json({
+      message: "An error occurred while creating the company",
+      error: error.message,
+    });
+  }
+};
+
   
 // const getAllExpos = async (req, res) => {
 //     try {

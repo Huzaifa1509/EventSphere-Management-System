@@ -7,15 +7,22 @@ import Register from './Pages/Register.tsx'
 import ForgetPassword from './Pages/ForgetPassword.tsx'
 import Dashboard from './Pages/Dashboard.tsx'
 import Exhibitor from './Pages/Exhibitor.tsx'
+import CreateExpoEvent from './Pages/CreateExpoEvent.tsx'
+import CreateBooth from './Pages/CreateBooth.tsx'
+import ShowAllBooth from './Pages/ShowAllBooth.tsx'
+import VerifyCode from './Pages/VerifyCode.tsx'
+import ShowAllExpos from './Pages/ShowAllExpos.tsx'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, Navigate } from 'react-router-dom'
 import ProtectedRoute from './ProtectedRoute.jsx'
-import { EncryptStorage } from 'encrypt-storage';
+// import { EncryptStorage } from 'encrypt-storage';
 
-const encryptStorage = new EncryptStorage(import.meta.env.VITE_SECRET_KEY, {
-    localStorage: 'localStorage',
-  });
+// const encryptStorage = new EncryptStorage(import.meta.env.VITE_SECRET_KEY, {
+//     localStorage: 'localStorage',
+//   });
 
-const value = encryptStorage.getItem('token');
+// const value = encryptStorage.getItem('token');
+
+const value = localStorage.getItem('token');
 
 const router = createBrowserRouter(
 
@@ -25,11 +32,20 @@ const router = createBrowserRouter(
       <Route index element={<Login />} />
       <Route path="register" element={  <Register />} />
       <Route path="forget-password" element={<ForgetPassword />} />
+      <Route path="verify/:otp" element={<VerifyCode />} />
       <Route path="exhibitor" element={<Exhibitor />} />
+      <Route path="expoevents" element={<CreateExpoEvent />} />
+ 
     </Route>
+    
 
+      <Route path="exhibitor" element={<Exhibitor />} />
     <Route path="/dashboard" element={<ProtectedRoute />}>
       <Route index element={<Dashboard />} />
+      <Route path="expoevents" element={<CreateExpoEvent />} />
+      <Route path="booth" element={<CreateBooth />} />
+      <Route path="allbooths" element={<ShowAllBooth />} />
+      <Route path="allevents" element={<ShowAllExpos />} />
     </Route>
   </>
   )

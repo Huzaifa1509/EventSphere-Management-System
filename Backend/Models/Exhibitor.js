@@ -22,10 +22,10 @@ const exhibitorSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    // requireDocument: {
-    //     type: String,
-    //     required: true,
-    // },
+    requireDocument: {
+        type: String,
+        required: true,
+    },
     // booths: [{ 
     //     type: mongoose.Schema.Types.ObjectId, 
     //     ref: "Booth" 
