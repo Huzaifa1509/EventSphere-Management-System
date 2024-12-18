@@ -35,7 +35,7 @@ const createExpo = async (req, res) => {
   if (!organizerName || organizerName.trim() === '') {
     return res.status(400).json({ message: "Organizer name is required" });
   }
-  if (!organizerContact || !/^\d{11}$/.test(organizerContact)) {
+  if (!organizerContact || !/^\d{10}$/.test(organizerContact)) {
     return res.status(400).json({ message: "Organizer contact must be a 11-digit number" });
   }
   if (!totalBooths || totalBooths < 1) {
