@@ -9,6 +9,7 @@ import Dashboard from './Pages/Dashboard.tsx'
 import Exhibitor from './Pages/Exhibitor.tsx'
 import CreateExpoEvent from './Pages/CreateExpoEvent.tsx'
 import CreateBooth from './Pages/CreateBooth.tsx'
+import Attendee from './Pages/Attendee.tsx'
 import ShowAllBooth from './Pages/ShowAllBooth.tsx'
 import VerifyCode from './Pages/VerifyCode.tsx'
 import ShowAllExpos from './Pages/ShowAllExpos.tsx'
@@ -35,6 +36,7 @@ const router = createBrowserRouter(
       <Route path="verify/:otp" element={<VerifyCode />} />
       <Route path="exhibitor" element={<Exhibitor />} />
       <Route path="expoevents" element={<CreateExpoEvent />} />
+      <Route path="attendee" element={<Attendee />} />
  
     </Route>
     
