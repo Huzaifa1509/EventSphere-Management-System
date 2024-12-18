@@ -1,7 +1,9 @@
 const Expo = require("../Models/Expo");
 const Booth = require("../Models/Booth");
 const User = require("../Models/User")
-const {Attendee, ExhibitorInteraction, Exhibitor, Session}= require("../Models/Attendee");
+const {Attendee, ExhibitorInteraction,
+  //  Exhibitor,
+    Session}= require("../Models/Attendee");
 const mongoose = require("mongoose");
 
 const jwt = require("jsonwebtoken");
@@ -211,12 +213,12 @@ const interactWithExhibitor = async (req, res) => {
     const attendeeId = req.user.userId;
 
     // Find exhibitor and attendee
-    const exhibitor = await Exhibitor.findById(exhibitorId);
+    // const exhibitor = await Exhibitor.findById(exhibitorId);
     const attendee = await Attendee.findOne({AttendeeId: attendeeId});
 
-    if (!exhibitor) {
-      return res.status(404).json({ message: "Exhibitor not found" });
-    }
+    // if (!exhibitor) {
+    //   return res.status(404).json({ message: "Exhibitor not found" });
+    // }
 
     // Create interaction
     const interaction = new ExhibitorInteraction({
@@ -230,16 +232,16 @@ const interactWithExhibitor = async (req, res) => {
 
     // Add to attendee and exhibitor interactions
     attendee.exhibitorInteractions.push(exhibitorId);
-    exhibitor.interactions.push(interaction._id); 
+    // exhibitor.interactions.push(interaction._id); 
 
     await attendee.save();
-    await exhibitor.save();
+    // await exhibitor.save();
 
     res.status(200).json({
       message: "Exhibitor interaction recorded",
       interaction: {
         id: interaction._id,
-        exhibitor: exhibitor.name,
+        // exhibitor: exhibitor.name,
         type: interaction.interactionType,
       },
     });

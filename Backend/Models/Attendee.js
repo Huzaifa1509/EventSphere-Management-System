@@ -133,40 +133,40 @@ const ExhibitorInteractionSchema = new mongoose.Schema({
 });
 
 // Exhibitor Schema
-const ExhibitorSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  description: {
-    type: String,
-    trim: true
-  },
-  boothNumber: {
-    type: String,
-    trim: true
-  },
-  contactEmail: {
-    type: String,
-    lowercase: true,
-    trim: true
-  },
-  interactions: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'ExhibitorInteraction'
-  }]
-});
+// const ExhibitorSchema = new mongoose.Schema({
+//   name: {
+//     type: String,
+//     required: true,
+//     trim: true
+//   },
+//   description: {
+//     type: String,
+//     trim: true
+//   },
+//   boothNumber: {
+//     type: String,
+//     trim: true
+//   },
+//   contactEmail: {
+//     type: String,
+//     lowercase: true,
+//     trim: true
+//   },
+//   interactions: [{
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: 'ExhibitorInteraction'
+//   }]
+// });
 
 const Attendee = mongoose.model('Attendee', AttendeeSchema);
 const ExhibitorInteraction = mongoose.model('ExhibitorInteraction', ExhibitorInteractionSchema);
-const Exhibitor = mongoose.model('Exhibitor', ExhibitorSchema);
+// const Exhibitor = mongoose.model('Exhibitor', ExhibitorSchema);
 const Session = mongoose.model('Session', SessionSchema);
 
 
 module.exports = {
   Attendee,
   ExhibitorInteraction,
-  Exhibitor,
+  // Exhibitor,
   Session
 }
