@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '@/Components/ui/Button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/Components/ui/Form';
 import { Input } from '@/Components/ui/Input'
 import { Key } from 'lucide-react';
@@ -19,44 +19,31 @@ const formSchema = z.object({
   password: z.string().min(2).max(50),
   role: z.string().min(2).max(50).toUpperCase(),
   phone: z.string().min(13).max(14),
-  organization: z.string().min(2).max(50).optional(),
+  organization: z.string().optional(),
 })
 
 const Register = () => {
   const { toast } = useToast()
   const navigate = useNavigate()
 
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [role, setRole] = useState("ATTENDEE")
-  const [phone, setPhone] = useState("")
-  const [organization, setOrganization] = useState("")
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: name,
-      email: email,
-      password: password,
-      role: role,
-      phone: phone,
-      organization: organization
+      name: "",
+      email: "",
+      password: "",
+      role: "ATTENDEE",
+      phone: "",
+      organization: "",
     },
   })
 
-  useEffect(() => {
-    setName(form.getValues('name'))
-    setEmail(form.getValues('email'))
-    setPassword(form.getValues('password'))
-    setRole(form.getValues('role'))
-    setPhone(form.getValues('phone'))
-    setOrganization(form.getValues('organization'))
-  }, [onSubmit])
 
   function onSubmit(values: z.infer<typeof formSchema>) {
 
     console.log(values)
+
 
     // const encryptStorage = new AsyncEncryptStorage('eventSphere', {
     //   localStorage: 'localStorage',
@@ -64,10 +51,11 @@ const Register = () => {
     // });
 
     try {
-      axios.post('api/verify', { email: values.email, name: values.name })
+      axios.post('/api/verify', { email: values.email, name: values.name })
         .then(response => {
           console.log(response.data);
           if (response.status === 200 && response.data.otp) {
+            console.log(response.data.otp);
             // encryptStorage.setItem('tmp_user', JSON.stringify(values));
             // encryptStorage.setItem('otp', response.data.otp);
             localStorage.setItem('tmp_user', JSON.stringify(values));
@@ -79,6 +67,7 @@ const Register = () => {
             })
             // navigate('/dashboard')
           }
+
         })
         .catch(error => {
           console.error("Error: ", error.response?.data.message);

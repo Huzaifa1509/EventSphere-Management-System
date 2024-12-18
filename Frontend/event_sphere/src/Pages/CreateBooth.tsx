@@ -18,7 +18,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
+} from '@/components/ui/Select';
 import { Input } from '@/Components/ui/Input';
 import { CircleFadingArrowUp } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
