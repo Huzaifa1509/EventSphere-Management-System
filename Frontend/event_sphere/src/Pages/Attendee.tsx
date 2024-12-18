@@ -25,8 +25,6 @@ interface ExpoEvents {
 const Attendee: React.FC = () => {
   const [expos, setExpos] = useState<ExpoEvents[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const [selectedExpo, setSelectedExpo] = useState<ExpoEvents | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -45,7 +43,12 @@ const Attendee: React.FC = () => {
   }, []);
 
   return (
+    <>
     <div className="container mx-auto py-8">
+    <h1 className="text-2xl font-bold mb-6 text-center">Attendee</h1>
+
+  </div>
+    {/* <div className="container mx-auto py-8">
       <h1 className="text-2xl font-bold mb-6 text-center">All Events</h1>
 
       {loading ? (
@@ -95,7 +98,8 @@ const Attendee: React.FC = () => {
           ))}
         </div>
       )}
-    </div>
+    </div> */}
+    </>
   );
 };
 
