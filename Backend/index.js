@@ -52,7 +52,13 @@ app.delete('/api/booths/:boothId', BoothController.deleteBooth);
 
 
 //Attende routes
-app.post('/registerForExpo/:expoId',protect, AttendeeController.registerForExpo);
+app.post('/api/register-for-expo/:expoId',protect, AttendeeController.registerForExpo);
+app.post('/api/register-for-session/:sessionId',protect, AttendeeController.registerForSession);
+app.put('/api/bookmark-session/:sessionId',protect, AttendeeController.bookmarkSession);
+app.post('/api/interact-with-exhibitor', protect, AttendeeController.interactWithExhibitor);
+app.put('/api/update-notification-preferences', protect, AttendeeController.updateNotificationPreferences);
+app.get('/api/user-schedule', protect, AttendeeController.getUserSchedule);
+
 
 // Exhibitor routes
 app.post('/api/exhibitor',upload.single('requireDocument') , exhibitorController.createExhibitor); ///to create an Expo
