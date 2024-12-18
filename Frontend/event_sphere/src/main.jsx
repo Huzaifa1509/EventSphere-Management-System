@@ -11,6 +11,7 @@ import CreateExpoEvent from './Pages/CreateExpoEvent.tsx'
 import CreateBooth from './Pages/CreateBooth.tsx'
 import ShowAllBooth from './Pages/ShowAllBooth.tsx'
 import VerifyCode from './Pages/VerifyCode.tsx'
+import ShowAllExpos from './Pages/ShowAllExpos.tsx'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, Navigate } from 'react-router-dom'
 import ProtectedRoute from './ProtectedRoute.jsx'
 // import { EncryptStorage } from 'encrypt-storage';
@@ -44,6 +45,7 @@ const router = createBrowserRouter(
       <Route path="expoevents" element={<CreateExpoEvent />} />
       <Route path="booth" element={<CreateBooth />} />
       <Route path="allbooths" element={<ShowAllBooth />} />
+      <Route path="allevents" element={<ShowAllExpos />} />
     </Route>
   </>
   )

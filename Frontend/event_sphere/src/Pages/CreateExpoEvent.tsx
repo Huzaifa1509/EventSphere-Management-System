@@ -21,13 +21,13 @@ import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
     name: z.string().min(5).max(50),
-    description: z.string().min(5).max(500),
+    description: z.string().min(50).max(500),
     startDate: z.date(),
     endDate: z.date(),
     venue: z.string().min(5).max(50),
     organizerName: z.string().min(5).max(50),
     organizerContact: z.string().min(5).max(50),
-    totalBooths: z.number().positive(),
+    totalBooths: z.coerce.number().min(1),
 });
 
 const CreateExpoEvent = () => {
@@ -52,7 +52,7 @@ const CreateExpoEvent = () => {
         console.log(values);
 
         try {
-            axios.post('api/expos', values)
+            axios.post('/api/expos', values)
                 .then(response => {
                     console.log(response.data);
                     if (response.status === 201) {
@@ -254,7 +254,7 @@ const CreateExpoEvent = () => {
                         </Button>
                     </form>
                 </Form>
-                <Link to="/" className="text-rose-950 mt-5">Show All Events</Link>
+                <Link to="/dashboard/allevents" className="text-rose-950 mt-5">Show All Events</Link>
             </div>
             <Toaster />
         </>
