@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -11,7 +11,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios'
 import { useToast } from "@/hooks/use-toast"
 import { Toaster } from '@/Components/ui/Toaster';
-import { EncryptStorage } from 'encrypt-storage';
+// import { AsyncEncryptStorage } from 'encrypt-storage';
 
 const formSchema = z.object({
   name: z.string().min(5).max(50),
@@ -26,44 +26,66 @@ const Register = () => {
   const { toast } = useToast()
   const navigate = useNavigate()
 
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [role, setRole] = useState("ATTENDEE")
+  const [phone, setPhone] = useState("")
+  const [organization, setOrganization] = useState("")
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      role: "ATTENDEE",
-      phone: "",
-      organization: "",
+      name: name,
+      email: email,
+      password: password,
+      role: role,
+      phone: phone,
+      organization: organization
     },
   })
 
+  useEffect(() => {
+    setName(form.getValues('name'))
+    setEmail(form.getValues('email'))
+    setPassword(form.getValues('password'))
+    setRole(form.getValues('role'))
+    setPhone(form.getValues('phone'))
+    setOrganization(form.getValues('organization'))
+  }, [onSubmit])
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+
     console.log(values)
 
+    // const encryptStorage = new AsyncEncryptStorage('eventSphere', {
+    //   localStorage: 'localStorage',
+    //   expirationTime: 1800000, // 30mins
+    // });
+
     try {
-      axios.post('api/users', values)
+      axios.post('api/verify', { email: values.email, name: values.name })
         .then(response => {
           console.log(response.data);
-          if (response.status === 201 && response.data.token) {
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
+          if (response.status === 200 && response.data.otp) {
+            // encryptStorage.setItem('tmp_user', JSON.stringify(values));
+            // encryptStorage.setItem('otp', response.data.otp);
+            localStorage.setItem('tmp_user', JSON.stringify(values));
+            localStorage.setItem('otp', response.data.otp);
             toast({
               variant: "default",
               title: "Success",
-              description: "You have been registered successfully",
+              description: "Code has been sent to your email. Please verify in the next 30 minutes",
             })
-            navigate('/dashboard')
+            // navigate('/dashboard')
           }
         })
         .catch(error => {
-          console.error("Error: ", error.response.data.message);
+          console.error("Error: ", error.response?.data.message);
           toast({
             variant: "destructive",
             title: "Error",
-            description: error.response.data.message,
+            description: error.response?.data.message,
           })
         });
     } catch (error) {
