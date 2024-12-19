@@ -123,6 +123,32 @@ const Exhibitor = () => {
             title: "Exhibitor Saved",
             description: "Exhibitor data saved successfully.",
           })
+
+        // Step 2: Update the booth's booking status
+        return axios.put(
+          `/api/boothBooked/${selectedBooth._id}`,
+          { isBooked: true },
+          { headers: { 'Content-Type': 'application/json' } }
+        )
+          .then((response) => {
+            console.log(response);
+            toast({
+              variant: "default",
+              title: "Booth Booked",
+              description: `Booth ${selectedBooth.boothNumber} has been booked successfully.`,
+            })
+
+          })
+          .then(() => {
+            toast({
+              variant: "default",
+              title: "Booth Booked",
+              description: `Booth ${selectedBooth.boothNumber} has been booked successfully.`,
+            });
+            setIsModalOpen(false); 
+            fetchBooths(selectedBooth.expoId);
+          })
+
         })
         // Step 2: Update the booth's booking status
         // return axios.put(
@@ -399,7 +425,7 @@ const Exhibitor = () => {
             >
               <h3 className="text-lg font-semibold">{booth.boothNumber}</h3>
               <p>
-                <strong>Assigned to:</strong> {booth.Assignedto || "Not Assigned"}
+                <strong>Assigned to:</strong> {booth.Assignedto == null ? "Nobody" : booth.Assignedto}
               </p>
               <p>
                 <strong>Booked:</strong> {booth.isBooked ? "Yes" : "No"}
