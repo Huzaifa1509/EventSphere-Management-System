@@ -1,194 +1,267 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
-import { Calendar } from "@/components/ui/Calendar";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/Popover";
-
-import { useToast } from "@/hooks/use-toast";
+import React, { useEffect } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { Button } from '@/Components/ui/Button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/Components/ui/Form';
+import { Input } from '@/Components/ui/Input';
+import { Textarea } from '@/Components/ui/Textarea';
+import { Calendar as CalendarIcon } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import { useToast } from '@/hooks/use-toast';
+import { Calendar } from '@/Components/ui/Calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/Components/ui/Popover';
+import { cn } from '@/lib/utils';
 
 const formSchema = z.object({
-    name: z.string().min(5, "Name must be at least 5 characters").max(50),
-    description: z.string().min(50, "Description must be at least 50 characters").max(500),
-    startDate: z.date({ required_error: "Start date is required" }),
-    endDate: z.date({ required_error: "End date is required" }),
-    venue: z.string().min(5, "Venue must be at least 5 characters").max(50),
-    organizerName: z.string().min(5, "Organizer Name must be at least 5 characters").max(50),
-    organizerContact: z.string().min(5, "Organizer Contact must be at least 5 characters").max(50),
+  name: z.string().min(5).max(50),
+  description: z.string().min(50).max(500),
+  startDate: z.date(),
+  endDate: z.date(),
+  venue: z.string().min(5).max(50),
+  organizerName: z.string().min(5).max(50),
+  organizerContact: z.string().min(5).max(50),
+  totalBooths: z.coerce.number().min(1),
 });
 
-const UpdateEvent: React.FC = () => {
-    const { expoId } = useParams();
-    const navigate = useNavigate();
-    const { toast } = useToast();
+const UpdateEvent = () => {
+  const { expoId } = useParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-    const [loading, setLoading] = useState(false);
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        watch,
-        formState: { errors },
-    } = useForm({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            name: "",
-            description: "",
-            startDate: new Date(),
-            endDate: new Date(),
-            venue: "",
-            organizerName: "",
-            organizerContact: "",
-        },
-    });
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+      startDate: new Date(),
+      endDate: new Date(),
+      venue: '',
+      organizerName: '',
+      organizerContact: '',
+      totalBooths: 0,
+    },
+  });
 
+  useEffect(() => {
     const fetchExpoDetails = async () => {
-        if (!expoId) return;
-        try {
-            setLoading(true);
-            const response = await axios.get(`/api/expos/${expoId}`);
-            const expoData = response.data;
-
-            setValue("name", expoData.name);
-            setValue("description", expoData.description);
-            setValue("startDate", new Date(expoData.startDate));
-            setValue("endDate", new Date(expoData.endDate));
-            setValue("venue", expoData.venue);
-            setValue("organizerName", expoData.organizerName);
-            setValue("organizerContact", expoData.organizerContact);
-        } catch (error) {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Failed to fetch event details",
-            });
-        } finally {
-            setLoading(false);
-        }
+      try {
+        const response = await axios.get(`/api/expos/${expoId}`);
+        const expoData = response.data;
+        form.reset({
+          ...expoData,
+          startDate: new Date(expoData.startDate),
+          endDate: new Date(expoData.endDate),
+        });
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to fetch event details',
+        });
+      }
     };
 
-    useEffect(() => {
-        if (expoId) {
-            fetchExpoDetails();
-        }
-    }, [expoId]);
+    if (expoId) fetchExpoDetails();
+  }, [expoId, form, toast]);
 
-    const onSubmit = async (data: any) => {
-        try {
-            setLoading(true);
-            console.log(data);
-            console.log(expoId);
-            await axios.put(`/api/expos/${expoId}`, data);
-            toast({
-                variant: "default",
-                title: "Success",
-                description: "Event updated successfully",
-            });
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const payload = {
+        ...values,
+        startDate: values.startDate.toISOString(),
+        endDate: values.endDate.toISOString(),
+      };
 
-            navigate("/allevents");
-        } catch (error) {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: expoId ? "Failed to update event" : "Failed to create event",
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
+      await axios.put(`/api/expos/${expoId}`, payload);
 
-    return (
-        <div className="container mx-auto py-8">
-            <h1 className="text-2xl font-bold mb-6 text-center">
-                {expoId ? "Update Event" : "Create Event"}
-            </h1>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <Input
-                    placeholder="Event Name"
-                    {...register("name")}
-                    className={errors.name ? "border-red-500" : ""}
-                />
-                {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+      toast({
+        variant: 'default',
+        title: 'Success',
+        description: 'Event updated successfully',
+      });
 
-                <Input
-                    placeholder="Description"
-                    {...register("description")}
-                    className={errors.description ? "border-red-500" : ""}
-                />
-                {errors.description && (
-                    <p className="text-red-500 text-sm">{errors.description.message}</p>
-                )}
+      navigate('/allevents');
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to update event',
+      });
+    }
+  }
 
-                <Input
-                    placeholder="Venue"
-                    {...register("venue")}
-                    className={errors.venue ? "border-red-500" : ""}
-                />
-                {errors.venue && <p className="text-red-500 text-sm">{errors.venue.message}</p>}
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <Form {...form}>
+        <form
+          method="post"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-8 bg-slate-900 text-white p-5 rounded-2xl w-full max-w-4xl"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Expo Event Name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                <div>
-                    <span className="font-semibold">Start Date:</span>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button className="w-full text-left">
-                                {watch("startDate")?.toLocaleDateString()}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                            <Calendar
-                                selected={watch("startDate")}
-                                onSelect={(date) => setValue("startDate", date)}
-                            />
-                        </PopoverContent>
-                    </Popover>
-                </div>
+            <FormField
+              control={form.control}
+              name="venue"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Venue</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Event Venue" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                <div>
-                    <span className="font-semibold">End Date:</span>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button className="w-full text-left">
-                                {watch("endDate")?.toLocaleDateString()}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                            <Calendar
-                                selected={watch("endDate")}
-                                onSelect={(date) => setValue("endDate", date)}
-                            />
-                        </PopoverContent>
-                    </Popover>
-                </div>
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="col-span-full">
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Describe your event here" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                <Input
-                    placeholder="Organizer Name"
-                    {...register("organizerName")}
-                    className={errors.organizerName ? "border-red-500" : ""}
-                />
-                {errors.organizerName && (
-                    <p className="text-red-500 text-sm">{errors.organizerName.message}</p>
-                )}
+            <FormField
+              control={form.control}
+              name="startDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Start Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            'w-full justify-start text-left font-normal text-slate-800',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {field.value ? field.value.toDateString() : 'Pick a date'}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) => date < new Date()}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                <Input
-                    placeholder="Organizer Contact"
-                    {...register("organizerContact")}
-                    className={errors.organizerContact ? "border-red-500" : ""}
-                />
-                {errors.organizerContact && (
-                    <p className="text-red-500 text-sm">{errors.organizerContact.message}</p>
-                )}
+            <FormField
+              control={form.control}
+              name="endDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>End Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            'w-full justify-start text-left font-normal text-slate-800',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {field.value ? field.value.toDateString() : 'Pick a date'}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) => date < new Date()}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
+            <FormField
+              control={form.control}
+              name="organizerName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Organizer Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Organizer Name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                <Button type="submit" disabled={loading}>
-                    {loading ? "Saving..." : expoId ? "Update Event" : "Create Event"}
-                </Button>
-            </form>
+            <FormField
+              control={form.control}
+              name="organizerContact"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Organizer Contact</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Organizer Contact" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="totalBooths"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Total Booths</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Total Booths" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </form>
+        <div className="flex items-center justify-end space-x-2 pt-6">
+        <Button type="submit">Save Changes</Button>
         </div>
-    );
+      </Form>
+    </div>
+  );
 };
 
 export default UpdateEvent;
