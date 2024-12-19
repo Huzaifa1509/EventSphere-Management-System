@@ -67,74 +67,77 @@ const ShowAllExpos: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-6 text-center">All Events</h1>
+    <div className="flex flex-col items-center justify-center h-screen">
+      <div className="container mx-auto py-8">
+        <h1 className="text-2xl font-bold mb-6 text-center">All Events</h1>
 
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <Skeleton key={index} className="h-40 w-full rounded-lg" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {expos.map((expo) => (
-            <Card key={expo._id} className="shadow-lg rounded-lg bg-slate-900 text-white">
-              <CardHeader className="relative">
-                <div className="absolute right-4 top-4 flex flex-col space-y-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="p-2"
-                    onClick={() => handleDelete(expo._id)}
-                  >
-                    <Trash2 className="h-5 w-5" />
-                  </Button>
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <Skeleton key={index} className="h-40 w-full rounded-lg" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {expos.map((expo) => (
+              <Card key={expo._id} className="shadow-lg rounded-lg bg-slate-900 text-white">
+                <CardHeader className="relative">
+                  <div className="absolute right-4 top-4 flex flex-col space-y-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="p-2"
+                      onClick={() => handleDelete(expo._id)}
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </Button>
 
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="p-2"
-                    onClick={() => handleEdit(expo._id)}
-                  >
-                    <Edit className="h-5 w-5" />
-                  </Button>
-                </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="p-2"
+                      onClick={() => handleEdit(expo._id)}
+                    >
+                      <Edit className="h-5 w-5" />
+                    </Button>
+                  </div>
 
-                <CardTitle className="text-lg font-semibold">{expo.name}</CardTitle>
-                <CardDescription className="break-words whitespace-normal overflow-hidden">
-                  {expo.description}
-                </CardDescription>
-              </CardHeader>
+                  <CardTitle className="text-lg font-semibold">{expo.name}</CardTitle>
+                  <CardDescription className="break-words whitespace-normal overflow-hidden">
+                    {expo.description}
+                  </CardDescription>
+                </CardHeader>
 
-              <CardContent>
-                <p className="text-sm">
-                  <span className="font-semibold">Venue:</span> {expo.venue}
-                </p>
-                <p className="text-sm">
-                  <span className="font-semibold">Organizer Name:</span> {expo.organizerName}
-                </p>
-                <p className="text-sm">
-                  <span className="font-semibold">Organizer Contact:</span> {expo.organizerContact}
-                </p>
-                <p className="text-sm">
-                  <span className="font-semibold">Total Booths:</span> {expo.totalBooths}
-                </p>
-              </CardContent>
-              <CardFooter className="flex justify-between text-sm border-t border-slate-700 pt-2">
-                <span>
-                  <span className="font-semibold">Start Date:</span>{" "}
-                  {new Date(expo.startDate).toLocaleDateString()}
-                </span>
-                <span>
-                  <span className="font-semibold">End Date:</span>{" "}
-                  {new Date(expo.endDate).toLocaleDateString()}
-                </span>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      )}
+                <CardContent>
+                  <p className="text-sm">
+                    <span className="font-semibold">Venue:</span> {expo.venue}
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-semibold">Organizer Name:</span> {expo.organizerName}
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-semibold">Organizer Contact:</span> {expo.organizerContact}
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-semibold">Total Booths:</span> {expo.totalBooths}
+                  </p>
+                </CardContent>
+                <CardFooter className="flex justify-between text-sm border-t border-slate-700 pt-2">
+                  <span>
+                    <span className="font-semibold">Start Date:</span>{" "}
+                    {new Date(expo.startDate).toLocaleDateString()}
+                  </span>
+                  <span>
+                    <span className="font-semibold">End Date:</span>{" "}
+                    {new Date(expo.endDate).toLocaleDateString()}
+                  </span>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
     </div>
   );
 };
