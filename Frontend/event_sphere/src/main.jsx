@@ -17,16 +17,9 @@ import { EventList } from './Components/attendee/event-list.tsx'
 import { ExhibitorSearch } from './Components/attendee/exhibitor-search.tsx'
 import { ScheduleManager } from './Components/attendee/schedule-manager.tsx'
 import LayoutAttendee  from './Components/attendee/layout-attendee.tsx'
+import UpdateEvent from './Pages/UpdateEvent.tsx'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, Navigate } from 'react-router-dom'
 import ProtectedRoute from './ProtectedRoute.jsx'
-import { Layout } from 'lucide-react'
-// import { EncryptStorage } from 'encrypt-storage';
-
-// const encryptStorage = new EncryptStorage(import.meta.env.VITE_SECRET_KEY, {
-//     localStorage: 'localStorage',
-//   });
-
-// const value = encryptStorage.getItem('token');
 
 const value = localStorage.getItem('token');
 
@@ -56,6 +49,7 @@ const router = createBrowserRouter(
     <Route path="/dashboard" element={<ProtectedRoute />}>
       <Route index element={<Dashboard />} />
       <Route path="expoevents" element={<CreateExpoEvent />} />
+      <Route path="editexpo/:expoId" element={<UpdateEvent />} />
       <Route path="booth" element={<CreateBooth />} />
       <Route path="allbooths" element={<ShowAllBooth />} />
       <Route path="allevents" element={<ShowAllExpos />} />

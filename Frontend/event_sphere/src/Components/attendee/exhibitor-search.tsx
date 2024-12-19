@@ -1,8 +1,8 @@
-import React, { useState } from 'react'	
+import React, { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/Components/ui/Card'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/Components/ui/Dialog'
 
 const exhibitors = [
   { id: 1, name: 'Tech Corp', category: 'Software', booth: 'A1' },

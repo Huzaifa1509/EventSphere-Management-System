@@ -1,16 +1,25 @@
 import { Outlet, Navigate } from 'react-router-dom';
-// import { EncryptStorage } from 'encrypt-storage';
+import { AppSidebar } from "./components/ui/AppSidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/Sidebar"
 
 function ProtectedRoute() {
-  // const encryptStorage = new EncryptStorage(import.meta.env.VITE_SECRET_KEY, {
-  //   localStorage: 'localStorage',
-  // });
-
-  // const value = encryptStorage.getItem('token');
-
   const value = localStorage.getItem('token');
 
-  return value ? <Outlet /> : <Navigate to="/" replace />;
+ return value ? (
+      <>
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarTrigger />
+          <main className="ml-0 transition-all duration-300 ease-in-out md:ml-[--sidebar-width] md:peer-data-[state=collapsed]:ml-0">
+            
+            <Outlet />
+            
+          </main>
+        </SidebarProvider>
+      </>
+    ) : (
+      <Navigate to="/" replace />
+    );
 }
 
 export default ProtectedRoute;
