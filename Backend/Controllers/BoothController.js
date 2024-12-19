@@ -118,14 +118,9 @@ const BoothIsBooked = async (req, res) => {
     if (!booth) {
       return res.status(404).json({ message: "Booth not found" });
     }
-    if(isBooked == "true")
-    {
-      booth.isBooked = true;
-    }else{
-      booth.isBooked = false;
-    }
-    
 
+    booth.isBooked = isBooked;
+    console.log(booth);
     await booth.save();
     return res.status(200).json({ message: "Booth updated successfully", booth });
   } catch (error) {
