@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/Components/ui/Skeleton";
+import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/Components/ui/Dialog"; // Shadcn Dialog Components
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/Components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Trash2, Edit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -62,7 +63,7 @@ const ShowAllExpos: React.FC = () => {
 
 
   const handleEdit = (expoId: string) => {
-    navigate(`/dashboard/editexpo/${expoId}`); 
+    navigate(`/dashboard/editexpo/${expoId}`);
   };
 
   return (

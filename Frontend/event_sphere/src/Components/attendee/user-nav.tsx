@@ -1,5 +1,5 @@
 import React from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/Avatar"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -9,7 +9,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/Components/ui/Dropdown-menu"
 import { Link } from 'react-router-dom'
 
 export function UserNav() {
