@@ -124,30 +124,30 @@ const Exhibitor = () => {
             description: "Exhibitor data saved successfully.",
           })
 
-        // Step 2: Update the booth's booking status
-        return axios.put(
-          `/api/boothBooked/${selectedBooth._id}`,
-          { isBooked: true },
-          { headers: { 'Content-Type': 'application/json' } }
-        )
-          .then((response) => {
-            console.log(response);
-            toast({
-              variant: "default",
-              title: "Booth Booked",
-              description: `Booth ${selectedBooth.boothNumber} has been booked successfully.`,
-            })
+          // Step 2: Update the booth's booking status
+          return axios.put(
+            `/api/boothBooked/${selectedBooth._id}`,
+            { isBooked: true },
+            { headers: { 'Content-Type': 'application/json' } }
+          )
+            .then((response) => {
+              console.log(response);
+              toast({
+                variant: "default",
+                title: "Booth Booked",
+                description: `Booth ${selectedBooth.boothNumber} has been booked successfully.`,
+              })
 
-          })
-          .then(() => {
-            toast({
-              variant: "default",
-              title: "Booth Booked",
-              description: `Booth ${selectedBooth.boothNumber} has been booked successfully.`,
-            });
-            setIsModalOpen(false); 
-            fetchBooths(selectedBooth.expoId);
-          })
+            })
+            .then(() => {
+              toast({
+                variant: "default",
+                title: "Booth Booked",
+                description: `Booth ${selectedBooth.boothNumber} has been booked successfully.`,
+              });
+              setIsModalOpen(false);
+              fetchBooths(selectedBooth.expoId);
+            })
 
         })
         // Step 2: Update the booth's booking status
@@ -214,197 +214,234 @@ const Exhibitor = () => {
 
       <div className="flex flex-col items-center justify-center h-screen">
         <Form {...form}>
-          <form method='post' onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full bg-slate-900 text-white p-12" encType="multipart/form-data">
+          <form
+            method="post"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-8 w-full bg-slate-900 text-white p-12 rounded-xl"
+            encType="multipart/form-data"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Expo Field */}
+              <FormField
+                control={form.control}
+                name="expoId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Expo</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={(value) => field.onChange(value)}
+                        value={field.value}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an Expo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {expos.map((expo) => (
+                            <SelectItem key={expo._id} value={expo._id}>
+                              {expo.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
+              {/* Company Name Field */}
+              <FormField
+                control={form.control}
+                name="companyName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Company Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="IBEX ...."
+                        {...field}
+                        className="w-full"
+                        type="text"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-              control={form.control}
-              name="expoId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Expo</FormLabel>
-                  <FormControl>
-                    <Select onValueChange={(value) => field.onChange(value)} // Bind the selected value to the field
-                      value={field.value} >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select an Expo" />
-                      </SelectTrigger>
+              {/* Company Description Field */}
+              <FormField
+                control={form.control}
+                name="companyDescription"
+                render={({ field }) => (
+                  <FormItem className="col-span-full">
+                    <FormLabel>Company Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Enter Description Here....."
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Product Name Field */}
+              <FormField
+                control={form.control}
+                name="productName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Product Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter Name" type="text" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Product Description Field */}
+              <FormField
+                control={form.control}
+                name="productDescription"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Product Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Enter Product Description Here....."
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Services Field */}
+              <FormField
+                control={form.control}
+                name="services"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Company/Org Services</FormLabel>
+                    <Select onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a Service" />
+                        </SelectTrigger>
+                      </FormControl>
                       <SelectContent>
-                        {expos.map((expo) => (
-                          <SelectItem key={expo._id} value={expo._id}>
-                            {expo.name}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="WEB_DEVELOPMENT">Web Development</SelectItem>
+                        <SelectItem value="MOBILE_APP_DEVELOPMENT">
+                          Mobile App Development
+                        </SelectItem>
+                        <SelectItem value="UI_UX_DESIGN">UI/UX Design</SelectItem>
+                        <SelectItem value="DIGITAL_MARKETING">
+                          Digital Marketing
+                        </SelectItem>
+                        <SelectItem value="SEO">
+                          Search Engine Optimization (SEO)
+                        </SelectItem>
+                        <SelectContent>
+                          <SelectItem value="WEB_DEVELOPMENT">Web Development</SelectItem>
+                          <SelectItem value="MOBILE_APP_DEVELOPMENT">Mobile App Development</SelectItem>
+                          <SelectItem value="UI_UX_DESIGN">UI/UX Design</SelectItem>
+                          <SelectItem value="DIGITAL_MARKETING">Digital Marketing</SelectItem>
+                          <SelectItem value="SEO">Search Engine Optimization (SEO)</SelectItem>
+                          <SelectItem value="CLOUD_SERVICES">Cloud Services</SelectItem>
+                          <SelectItem value="IT_CONSULTING">IT Consulting</SelectItem>
+                          <SelectItem value="DATA_ANALYTICS">Data Analytics</SelectItem>
+                          <SelectItem value="CYBERSECURITY">Cybersecurity</SelectItem>
+                          <SelectItem value="E_COMMERCE_SOLUTIONS">E-Commerce Solutions</SelectItem>
+                          <SelectItem value="SOFTWARE_DEVELOPMENT">Software Development</SelectItem>
+                          <SelectItem value="GRAPHIC_DESIGN">Graphic Design</SelectItem>
+                          <SelectItem value="CONTENT_CREATION">Content Creation</SelectItem>
+                          <SelectItem value="VIDEO_PRODUCTION">Video Production</SelectItem>
+                          <SelectItem value="BRAND_STRATEGY">Brand Strategy</SelectItem>
+                          <SelectItem value="SOCIAL_MEDIA_MANAGEMENT">Social Media Management</SelectItem>
+                          <SelectItem value="PAYMENT_INTEGRATION">Payment Integration</SelectItem>
+                          <SelectItem value="CUSTOMER_SUPPORT_SERVICES">Customer Support Services</SelectItem>
+                          <SelectItem value="DATABASE_MANAGEMENT">Database Management</SelectItem>
+                          <SelectItem value="NETWORK_INFRASTRUCTURE">Network Infrastructure</SelectItem>
+                          <SelectItem value="HARDWARE_SUPPORT">Hardware Support</SelectItem>
+                          <SelectItem value="PRODUCT_DESIGN">Product Design</SelectItem>
+                          <SelectItem value="VIRTUAL_ASSISTANCE">Virtual Assistance</SelectItem>
+                          <SelectItem value="EVENT_MANAGEMENT">Event Management</SelectItem>
+                          <SelectItem value="PROJECT_MANAGEMENT">Project Management</SelectItem>
+                          <SelectItem value="HR_SERVICES">HR Services</SelectItem>
+                          <SelectItem value="LEGAL_SERVICES">Legal Services</SelectItem>
+                          <SelectItem value="TRANSLATION_SERVICES">Translation Services</SelectItem>
+                          <SelectItem value="LOGISTICS_AND_SHIPPING">Logistics and Shipping</SelectItem>
+                          <SelectItem value="TRAINING_AND_DEVELOPMENT">Training and Development</SelectItem>
+                          <SelectItem value="SALES_AND_MARKETING">Sales and Marketing</SelectItem>
+                          <SelectItem value="PUBLIC_RELATIONS">Public Relations</SelectItem>
+                          <SelectItem value="TECHNICAL_SUPPORT">Technical Support</SelectItem>
+                          <SelectItem value="BLOCKCHAIN_DEVELOPMENT">Blockchain Development</SelectItem>
+                          <SelectItem value="ARTIFICIAL_INTELLIGENCE">Artificial Intelligence</SelectItem>
+                          <SelectItem value="MACHINE_LEARNING">Machine Learning</SelectItem>
+                          <SelectItem value="AR_VR_DEVELOPMENT">AR/VR Development</SelectItem>
+                          <SelectItem value="GAME_DEVELOPMENT">Game Development</SelectItem>
+                          <SelectItem value="FINANCIAL_SERVICES">Financial Services</SelectItem>
+                          <SelectItem value="TAX_ACCOUNTING">Tax & Accounting</SelectItem>
+                          <SelectItem value="INSURANCE_SERVICES">Insurance Services</SelectItem>
+                          <SelectItem value="REAL_ESTATE_SERVICES">Real Estate Services</SelectItem>
+                          <SelectItem value="RESEARCH_AND_DEVELOPMENT">Research and Development</SelectItem>
+                          <SelectItem value="HEALTHCARE_SERVICES">Healthcare Services</SelectItem>
+                          <SelectItem value="EDUCATIONAL_SERVICES">Educational Services</SelectItem>
+                          <SelectItem value="TRAVEL_AND_TOURISM">Travel and Tourism</SelectItem>
+                          <SelectItem value="HOSPITALITY_SERVICES">Hospitality Services</SelectItem>
+                          <SelectItem value="RETAIL_SERVICES">Retail Services</SelectItem>
+                          <SelectItem value="SUSTAINABILITY_SERVICES">Sustainability Services</SelectItem>
+
+                        </SelectContent>
                       </SelectContent>
                     </Select>
-                  </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-
-              control={form.control}
-              name="companyName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Company Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="IBEX ...." {...field} className='w-full' type="text" />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="companyDescription"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Company Description</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Enter Description Here....." {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='productName'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Product Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter Name" type="text" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-
-            <FormField
-              control={form.control}
-              name="productDescription"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Product Description</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Enter Product Description Here....." {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="services"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Company/Org Services</FormLabel>
-                  <Select onValueChange={field.onChange}>
+              {/* Require Document Field */}
+              <FormField
+                control={form.control}
+                name="requireDocument"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Official Document</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a Service" />
-                      </SelectTrigger>
+                      <Input className='bg-white text-black hover:cursor-pointer'
+                        placeholder="Please Insert Your Document"
+                        type="file"
+                        onChange={(e) => {
+                          // Use the `field.onChange` to handle the file manually
+                          if (e.target.files && e.target.files[0]) {
+                            field.onChange(e.target.files[0]); // Update the value with the selected file
+                          }
+                        }}
+                      />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="WEB_DEVELOPMENT">Web Development</SelectItem>
-                      <SelectItem value="MOBILE_APP_DEVELOPMENT">Mobile App Development</SelectItem>
-                      <SelectItem value="UI_UX_DESIGN">UI/UX Design</SelectItem>
-                      <SelectItem value="DIGITAL_MARKETING">Digital Marketing</SelectItem>
-                      <SelectItem value="SEO">Search Engine Optimization (SEO)</SelectItem>
-                      <SelectItem value="CLOUD_SERVICES">Cloud Services</SelectItem>
-                      <SelectItem value="IT_CONSULTING">IT Consulting</SelectItem>
-                      <SelectItem value="DATA_ANALYTICS">Data Analytics</SelectItem>
-                      <SelectItem value="CYBERSECURITY">Cybersecurity</SelectItem>
-                      <SelectItem value="E_COMMERCE_SOLUTIONS">E-Commerce Solutions</SelectItem>
-                      <SelectItem value="SOFTWARE_DEVELOPMENT">Software Development</SelectItem>
-                      <SelectItem value="GRAPHIC_DESIGN">Graphic Design</SelectItem>
-                      <SelectItem value="CONTENT_CREATION">Content Creation</SelectItem>
-                      <SelectItem value="VIDEO_PRODUCTION">Video Production</SelectItem>
-                      <SelectItem value="BRAND_STRATEGY">Brand Strategy</SelectItem>
-                      <SelectItem value="SOCIAL_MEDIA_MANAGEMENT">Social Media Management</SelectItem>
-                      <SelectItem value="PAYMENT_INTEGRATION">Payment Integration</SelectItem>
-                      <SelectItem value="CUSTOMER_SUPPORT_SERVICES">Customer Support Services</SelectItem>
-                      <SelectItem value="DATABASE_MANAGEMENT">Database Management</SelectItem>
-                      <SelectItem value="NETWORK_INFRASTRUCTURE">Network Infrastructure</SelectItem>
-                      <SelectItem value="HARDWARE_SUPPORT">Hardware Support</SelectItem>
-                      <SelectItem value="PRODUCT_DESIGN">Product Design</SelectItem>
-                      <SelectItem value="VIRTUAL_ASSISTANCE">Virtual Assistance</SelectItem>
-                      <SelectItem value="EVENT_MANAGEMENT">Event Management</SelectItem>
-                      <SelectItem value="PROJECT_MANAGEMENT">Project Management</SelectItem>
-                      <SelectItem value="HR_SERVICES">HR Services</SelectItem>
-                      <SelectItem value="LEGAL_SERVICES">Legal Services</SelectItem>
-                      <SelectItem value="TRANSLATION_SERVICES">Translation Services</SelectItem>
-                      <SelectItem value="LOGISTICS_AND_SHIPPING">Logistics and Shipping</SelectItem>
-                      <SelectItem value="TRAINING_AND_DEVELOPMENT">Training and Development</SelectItem>
-                      <SelectItem value="SALES_AND_MARKETING">Sales and Marketing</SelectItem>
-                      <SelectItem value="PUBLIC_RELATIONS">Public Relations</SelectItem>
-                      <SelectItem value="TECHNICAL_SUPPORT">Technical Support</SelectItem>
-                      <SelectItem value="BLOCKCHAIN_DEVELOPMENT">Blockchain Development</SelectItem>
-                      <SelectItem value="ARTIFICIAL_INTELLIGENCE">Artificial Intelligence</SelectItem>
-                      <SelectItem value="MACHINE_LEARNING">Machine Learning</SelectItem>
-                      <SelectItem value="AR_VR_DEVELOPMENT">AR/VR Development</SelectItem>
-                      <SelectItem value="GAME_DEVELOPMENT">Game Development</SelectItem>
-                      <SelectItem value="FINANCIAL_SERVICES">Financial Services</SelectItem>
-                      <SelectItem value="TAX_ACCOUNTING">Tax & Accounting</SelectItem>
-                      <SelectItem value="INSURANCE_SERVICES">Insurance Services</SelectItem>
-                      <SelectItem value="REAL_ESTATE_SERVICES">Real Estate Services</SelectItem>
-                      <SelectItem value="RESEARCH_AND_DEVELOPMENT">Research and Development</SelectItem>
-                      <SelectItem value="HEALTHCARE_SERVICES">Healthcare Services</SelectItem>
-                      <SelectItem value="EDUCATIONAL_SERVICES">Educational Services</SelectItem>
-                      <SelectItem value="TRAVEL_AND_TOURISM">Travel and Tourism</SelectItem>
-                      <SelectItem value="HOSPITALITY_SERVICES">Hospitality Services</SelectItem>
-                      <SelectItem value="RETAIL_SERVICES">Retail Services</SelectItem>
-                      <SelectItem value="SUSTAINABILITY_SERVICES">Sustainability Services</SelectItem>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="requireDocument"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Official Document</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Please Insert Your Document"
-                      type="file"
-                      onChange={(e) => {
-                        // Use the `field.onChange` to handle the file manually
-                        if (e.target.files && e.target.files[0]) {
-                          field.onChange(e.target.files[0]); // Update the value with the selected file
-                        }
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button className="bg-white text-black hover:bg-black hover:text-white" type="submit"><Send /> Save</Button>
+            <div className="flex justify-end">
+              <Button
+                className="w-full bg-white text-black hover:bg-black hover:text-white"
+                type="submit"
+              >
+                <Send /> Save
+              </Button>
+            </div>
           </form>
         </Form>
       </div>
+
 
 
       {/* Modal */}
