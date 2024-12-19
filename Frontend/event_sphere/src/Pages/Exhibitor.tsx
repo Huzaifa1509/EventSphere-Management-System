@@ -38,39 +38,47 @@ const Exhibitor = () => {
       productName: "",
       productDescription: "",
       services: "",
-      requireDocument: ""
+      requireDocument: z
+      .instanceof(File, { message: "A valid file is required." })
+      .or(z.any()),
     },
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
-
-    try {
-      axios.post('api/exhibitor', values)
-        .then(response => {
-          console.log(response.data);
-          if (response.status === 201) {
-            toast({
-              variant: "default",
-              title: "Success",
-              description: "You have successfully created a company",
-            })
-          }
-        })
-        .catch(error => {
-          console.error("Error: ", error.response.data.message);
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: error.response.data.message,
-          })
-        });
-    } catch (error) {
-      console.error("Catch Error: ", error);
+    const formData = new FormData();
+    formData.append("companyName", values.companyName);
+    formData.append("companyDescription", values.companyDescription || "");
+    formData.append("productName", values.productName);
+    formData.append("productDescription", values.productDescription);
+    formData.append("services", values.services);
+  
+    if (values.requireDocument instanceof File) {
+      formData.append("requireDocument", values.requireDocument); // Append the file
     }
+  
+    axios
+      .post('api/exhibitor', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      .then((response) => {
+        if (response.status === 201) {
+          toast({
+            variant: "default",
+            title: "Success",
+            description: "You have successfully created a company",
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error: ", error.response?.data?.message);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: error.response?.data?.message || "An error occurred",
+        });
+      });
   }
+  
 
   return (
     <>
@@ -215,18 +223,27 @@ const Exhibitor = () => {
 
             <FormField
               control={form.control}
-              name='requireDocument'
+              name="requireDocument"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Official Document</FormLabel>
                   <FormControl>
-                    <Input placeholder="Please Insert Your Document" type='file' {...field} />
+                    <Input
+                      placeholder="Please Insert Your Document"
+                      type="file"
+                      onChange={(e) => {
+                        // Use the `field.onChange` to handle the file manually
+                        if (e.target.files && e.target.files[0]) {
+                          field.onChange(e.target.files[0]); // Update the value with the selected file
+                        }
+                      }}
+                    />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <Button className="bg-white text-black hover:bg-black hover:text-white" type="submit"><Send /> Save</Button>
           </form>
         </Form>

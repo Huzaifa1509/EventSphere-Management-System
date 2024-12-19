@@ -52,13 +52,13 @@ const router = createBrowserRouter(
       <Route path="schedule" element={<ScheduleManager />} />
       </Route> 
 
-      <Route path="exhibitor" element={<Exhibitor />} />
     <Route path="/dashboard" element={<ProtectedRoute />}>
       <Route index element={<Dashboard />} />
       <Route path="expoevents" element={<CreateExpoEvent />} />
       <Route path="booth" element={<CreateBooth />} />
       <Route path="allbooths" element={<ShowAllBooth />} />
       <Route path="allevents" element={<ShowAllExpos />} />
+      <Route path="exhibitor" element={<Exhibitor />} />
     </Route>
   </>
   )
