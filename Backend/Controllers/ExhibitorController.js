@@ -3,8 +3,8 @@ const Booth = require("../Models/Booth");
 const mongoose = require("mongoose");
 
 const createExhibitor = async (req, res) => {
-  const { companyName, companyDescription, productName, productDescription, services } = req.body;
-
+  
+  const { companyName, companyDescription, productName, productDescription, services, expoId} = req.body;
   // Check required fields
   if (!companyName || companyName.trim() === '') {
     return res.status(400).json({ message: "Company name is required" });
@@ -24,15 +24,16 @@ const createExhibitor = async (req, res) => {
     } else {
       return res.status(400).json({ message: "Require Document (file) is missing" });
     }
-
-    // Create the Exhibitor Company/Org
+ 
+    //Create the Exhibitor Company/Org
     const newExhibitor = await Exhibitor.create({
       companyName,
       companyDescription,
       productName,
       productDescription,
       services,
-      requireDocument: requireDocumentUrl, // Save file URL in the database
+      requireDocument: requireDocumentUrl,
+      expoId,
     });
 
     await newExhibitor.save();

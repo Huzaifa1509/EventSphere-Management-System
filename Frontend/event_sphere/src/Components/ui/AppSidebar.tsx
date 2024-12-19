@@ -30,22 +30,22 @@ const items = [
     },
     {
         title: "Expo Events",
-        url: "/dashboard/expoevents",
+        url: "expoevents",
         icon: CalendarDays,
     },
     {
         title: "Booth",
-        url: "/dashboard/booth",
+        url: "booth",
         icon: Store,
     },
     {
         title: "Events",
-        url: "/dashboard/allevents",
+        url: "allevents",
         icon: Calendar1,
     },
     {
         title: "Exhibitor",
-        url: "/dashboard/exhibitor",
+        url: "exhibitor",
         icon: User,
     },
 ]
