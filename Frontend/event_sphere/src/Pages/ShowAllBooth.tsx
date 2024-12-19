@@ -41,8 +41,6 @@ const ShowAllBooth: React.FC = () => {
     fetchBooths();
   }, []);
 
-  
-
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-2xl font-bold mb-6 text-center">All Booths</h1>
@@ -57,21 +55,9 @@ const ShowAllBooth: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {booths.map((booth) => (
             <Card key={booth._id} className="shadow-lg rounded-lg bg-slate-900 text-white">
-              <CardHeader className="relative">
-                <div className="absolute right-4 top-4 flex flex-col space-y-2">
-                  {/* <Button
-                    variant="ghost"
-                    size="icon"
-                    className="p-2"
-                    onClick={() => handleDelete(expo._id)}
-                  >
-                    <Trash2 className="h-5 w-5 text-white" />
-                  </Button> */}
-
-                </div>
-
+              <CardHeader>
                 <CardTitle className="text-lg">Booth Number: {booth.boothNumber}</CardTitle>
-                <CardDescription className="break-words whitespace-normal overflow-hidden">
+                <CardDescription>
                   Event: <span className="font-semibold">{booth.expoId.name}</span>
                 </CardDescription>
               </CardHeader>

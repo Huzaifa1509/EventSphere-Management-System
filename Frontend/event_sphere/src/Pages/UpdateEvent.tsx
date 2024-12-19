@@ -13,28 +13,28 @@ import { useToast } from "@/hooks/use-toast";
 
 
 const formSchema = z.object({
-    name: z.string().min(5).max(50),
-    description: z.string().min(50).max(500),
-    startDate: z.date(),
-    endDate: z.date(),
-    venue: z.string().min(5).max(50),
-    organizerName: z.string().min(5).max(50),
-    organizerContact: z.string().min(5).max(50),
-    totalBooths: z.coerce.number().min(1),
+  name: z.string().min(5).max(50),
+  description: z.string().min(50).max(500),
+  startDate: z.date(),
+  endDate: z.date(),
+  venue: z.string().min(5).max(50),
+  organizerName: z.string().min(5).max(50),
+  organizerContact: z.string().min(5).max(50),
+  totalBooths: z.coerce.number().min(1),
 });
 
 const UpdateEvent: React.FC = () => {
-  const { expoId } = useParams(); 
-  console.log("Expo ID:", expoId); 
+  const { expoId } = useParams();
+  console.log("Expo ID:", expoId);
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   const [updatedExpo, setUpdatedExpo] = useState<any>({
     name: "",
     description: "",
     venue: "",
-    startDate: Date(),
-    endDate: Date(),
+    startDate: new Date(),
+    endDate: new Date(),
     organizerName: "",
     organizerContact: "",
     totalBooths: 0,
@@ -46,11 +46,11 @@ const UpdateEvent: React.FC = () => {
         const response = await axios.get(`/api/expos/${expoId}`);
         const expoData = response.data;
         console.log(expoData);
-        // setUpdatedExpo({
-        //   ...expoData,
-        //   startDate: new Date(expoData.startDate),
-        //   endDate: new Date(expoData.endDate),
-        // });
+        setUpdatedExpo({
+          ...expoData,
+          startDate: new Date(expoData.startDate),
+          endDate: new Date(expoData.endDate),
+        });
       } catch (error) {
         toast({
           variant: "destructive",
