@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Calendar } from '@/Components/ui/Calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/Components/ui/Popover';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/Components/ui/Skeleton';
 
 const formSchema = z.object({
   name: z.string().min(5).max(50),
@@ -29,6 +30,9 @@ const UpdateEvent = () => {
   const { expoId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [loading, setLoading] = useState<boolean>(false);
+
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,16 +48,44 @@ const UpdateEvent = () => {
     },
   });
 
+  if (!expoId) {
+    return <div className='text-red-500 text-center'>Invalid Expo ID</div>;
+  }
+
   useEffect(() => {
-    const fetchExpoDetails = async () => {
+    ; (async () => {
+      setLoading(true);
       try {
-        const response = await axios.get(`/api/expos/${expoId}`);
-        const expoData = response.data;
-        form.reset({
-          ...expoData,
-          startDate: new Date(expoData.startDate),
-          endDate: new Date(expoData.endDate),
-        });
+        await axios.get(`/api/expos/${expoId}`)
+          .then((response) => {
+            console.log(response.data);
+            const expoData = response.data;
+            form.setValue('name', expoData.name);
+            form.setValue('description', expoData.description);
+            form.setValue('startDate', new Date(expoData.startDate));
+            form.setValue('endDate', new Date(expoData.endDate));
+            form.setValue('venue', expoData.venue);
+            form.setValue('organizerName', expoData.organizerName);
+            form.setValue('organizerContact', expoData.organizerContact);
+            form.setValue('totalBooths', expoData.totalBooths);
+            toast({
+              title: 'Event Data Loaded',
+              description: 'Event data has been loaded successfully',
+              variant: 'default',
+            })
+            setLoading(false)
+          },
+          )
+          .catch((error) => {
+            setLoading(false)
+            console.error(error);
+            toast({
+              title: 'Error',
+              description: 'Failed to load Expo data',
+              variant: 'destructive',
+            });
+          });
+
       } catch (error) {
         toast({
           variant: 'destructive',
@@ -61,12 +93,40 @@ const UpdateEvent = () => {
           description: 'Failed to fetch event details',
         });
       }
-    };
+      finally {
+        setLoading(false);
+      }
+    })();
 
-    if (expoId) fetchExpoDetails();
-  }, [expoId, form, toast]);
+
+
+  }, [/*expoId, form,*/ toast]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="space-y-8 bg-slate-500 p-5 rounded-2xl w-full max-w-4xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Skeleton for each input */}
+            <Skeleton className="h-10 rounded-md" />
+            <Skeleton className="h-10 rounded-md" />
+            <Skeleton className="col-span-full h-24 rounded-md" />
+            <Skeleton className="h-10 rounded-md" />
+            <Skeleton className="h-10 rounded-md" />
+            <Skeleton className="h-10 rounded-md" />
+            <Skeleton className="h-10 rounded-md" />
+            <Skeleton className="h-10 rounded-md" />
+          </div>
+          {/* Skeleton for submit button */}
+          <Skeleton className="h-12 w-32 rounded-md" />
+        </div>
+      </div>
+    );
+  }
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
     try {
       const payload = {
         ...values,
@@ -74,15 +134,28 @@ const UpdateEvent = () => {
         endDate: values.endDate.toISOString(),
       };
 
-      await axios.put(`/api/expos/${expoId}`, payload);
+      axios.put(`/api/expos/${expoId}`, payload)
+        .then((response) => {
+          console.log(response.data);
+          toast({
+            variant: 'success',
+            title: 'Success',
+            description: 'Event updated successfully',
+          });
 
-      toast({
-        variant: 'default',
-        title: 'Success',
-        description: 'Event updated successfully',
-      });
+          navigate('/dashboard/expoevents');
+        })
+        .catch((error) => {
+          console.error(error);
+          console.log(error.response.data?.message);
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Failed to update event',
+          });
+        });
 
-      navigate('/allevents');
+
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -255,9 +328,9 @@ const UpdateEvent = () => {
               )}
             />
           </div>
+          <Button type="submit">Save Changes</Button>
         </form>
         <div className="flex items-center justify-end space-x-2 pt-6">
-        <Button type="submit">Save Changes</Button>
         </div>
       </Form>
     </div>
