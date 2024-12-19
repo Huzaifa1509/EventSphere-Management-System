@@ -88,7 +88,7 @@ const ShowAllExpos: React.FC = () => {
                     className="p-2"
                     onClick={() => handleDelete(expo._id)}
                   >
-                    <Trash2 className="h-5 w-5 text-white" />
+                    <Trash2 className="h-5 w-5" />
                   </Button>
 
                   <Button
@@ -97,7 +97,7 @@ const ShowAllExpos: React.FC = () => {
                     className="p-2"
                     onClick={() => handleEdit(expo._id)}
                   >
-                    <Edit className="h-5 w-5 text-white" />
+                    <Edit className="h-5 w-5" />
                   </Button>
                 </div>
 
