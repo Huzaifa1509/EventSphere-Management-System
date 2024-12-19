@@ -1,4 +1,4 @@
-import React, { useEffect,useState  } from 'react';
+import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -35,6 +35,14 @@ const Exhibitor = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [booths, setBooths] = useState([]);
   const [selectedBooth, setSelectedBooth] = useState(null);
+  const [companyName, setCompanyName] = useState(null);
+  const [companyDescription, setCompanyDescription] = useState(null);
+  const [productName, setProductName] = useState(null);
+  const [productDescription, setProductDescription] = useState(null);
+  const [services, setServices] = useState(null);
+  const [expoId, setExpoId] = useState(null);
+  const [requireDocument, setRequireDocument] = useState(null);
+
 
   useEffect(() => {
     const fetchExpos = async () => {
@@ -51,7 +59,7 @@ const Exhibitor = () => {
         });
       }
     };
-  
+
     fetchExpos();
   }, []);
 
@@ -65,8 +73,8 @@ const Exhibitor = () => {
       services: "",
       expoId: "",
       requireDocument: z
-      .instanceof(File, { message: "A valid file is required." })
-      .or(z.any()),
+        .instanceof(File, { message: "A valid file is required." })
+        .or(z.any()),
     },
   })
 
@@ -83,61 +91,97 @@ const Exhibitor = () => {
     }
   };
 
-  function onBoothSubmit(values: z.infer<typeof formSchema>) {
-    
-    if (!selectedBooth) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please select a booth before saving.",
-      });
-      return;
-    }
-  
-    // Step 1: Post the exhibitor data
-    axios
-    .post('/api/exhibitor', values, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
-      .then((response) => {
-        toast({
-          variant: "default",
-          title: "Exhibitor Saved",
-          description: "Exhibitor data saved successfully.",
-        });
-  
-        // Step 2: Update the booth's booking status
-        return axios.put(
-          `/api/booths/${selectedBooth._id}`,
-          { isBooked: true },
-          { headers: { 'Content-Type': 'application/json' } }
-        );
-      })
-      .then(() => {
-        toast({
-          variant: "default",
-          title: "Booth Booked",
-          description: `Booth ${selectedBooth.boothNumber} has been booked successfully.`,
-        });
-        setIsModalOpen(false); // Close the modal after saving
-        // Optionally, refresh the booth list
-        fetchBooths(selectedBooth.expoId);
-      })
-      .catch((error) => {
+
+  async function onBoothSubmit() {
+
+    try {
+      console.log(form.getValues());
+      // const { requireDocument, ...values } = form.getValues();
+
+      if (!selectedBooth) {
         toast({
           variant: "destructive",
           title: "Error",
-          description: error.response?.data?.message || "An error occurred during the process.",
+          description: "Please select a booth before saving.",
         });
-      });
+        return;
+      }
+
+      console.log(selectedBooth)
+
+      // Step 1: Post the exhibitor data
+      axios
+        .post('/api/exhibitor', form.getValues(), {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        .then((response) => {
+          console.log(response);
+          toast({
+            variant: "default",
+            title: "Exhibitor Saved",
+            description: "Exhibitor data saved successfully.",
+          })
+        })
+        // Step 2: Update the booth's booking status
+        // return axios.put(
+        //   `/api/boothBooked/${selectedBooth._id}`,
+        //   { isBooked: true },
+        //   { headers: { 'Content-Type': 'application/json' } }
+        // )
+        //   .then((response) => {
+        //     console.log(response);
+        //     toast({
+        //       variant: "default",
+        //       title: "Booth Booked",
+        //       description: `Booth ${selectedBooth.boothNumber} has been booked successfully.`,
+        //     })
+
+        //   })
+        //   .then(() => {
+        //     toast({
+        //       variant: "default",
+        //       title: "Booth Booked",
+        //       description: `Booth ${selectedBooth.boothNumber} has been booked successfully.`,
+        //     });
+        //     setIsModalOpen(false); // Close the modal after saving
+        //     // Optionally, refresh the booth list
+        //     fetchBooths(selectedBooth.expoId);
+        //   })
+        .catch((error) => {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: error.response?.data?.message || "An error occurred during the process.",
+          });
+        });
+
+    }
+    catch (error) {
+      console.error(error);
+      console.log(error.response?.data?.message);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.response?.data?.message || "An error occurred during the process.",
+      })
+    }
   };
-  
+
 
   const onSubmit = async (values) => {
     await fetchBooths(values.expoId);
     setIsModalOpen(true);
+    setCompanyDescription(values.companyDescription);
+    setCompanyName(values.companyName);
+    setProductName(values.productName);
+    setProductDescription(values.productDescription);
+    setServices(values.services);
+    setExpoId(values.expoId);
+    setRequireDocument(values.requireDocument);
   };
-  
+
 
   return (
     <>
@@ -148,30 +192,30 @@ const Exhibitor = () => {
 
             <FormField
 
-            control={form.control}
-            name="expoId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Expo</FormLabel>
-                <FormControl>
-                  <Select onValueChange={(value) => field.onChange(value)} // Bind the selected value to the field
-                  value={field.value} >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select an Expo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {expos.map((expo) => (
-                      <SelectItem key={expo._id} value={expo._id}>
-                        {expo.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                </FormControl>
+              control={form.control}
+              name="expoId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Expo</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={(value) => field.onChange(value)} // Bind the selected value to the field
+                      value={field.value} >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select an Expo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {expos.map((expo) => (
+                          <SelectItem key={expo._id} value={expo._id}>
+                            {expo.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
 
-                <FormMessage />
-              </FormItem>
-            )}
+                  <FormMessage />
+                </FormItem>
+              )}
             />
 
             <FormField
@@ -337,8 +381,8 @@ const Exhibitor = () => {
       </div>
 
 
-       {/* Modal */}
-       <Modal
+      {/* Modal */}
+      <Modal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
         className="modal"
@@ -349,9 +393,8 @@ const Exhibitor = () => {
           {booths.map((booth) => (
             <div
               key={booth._id}
-              className={`p-4 border rounded ${
-                selectedBooth?._id === booth._id ? "bg-blue-500 text-white" : ""
-              }`}
+              className={`p-4 border rounded ${selectedBooth?._id === booth._id ? "bg-blue-500 text-white" : ""
+                }`}
               onClick={() => setSelectedBooth(booth)}
             >
               <h3 className="text-lg font-semibold">{booth.boothNumber}</h3>
