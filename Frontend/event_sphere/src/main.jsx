@@ -50,7 +50,6 @@ const router = createBrowserRouter(
       <Route path="events" element={<EventList />} />
       <Route path="exhibitor" element={<ExhibitorSearch />} />
       <Route path="schedule" element={<ScheduleManager />} />
-
       </Route> 
 
       <Route path="exhibitor" element={<Exhibitor />} />

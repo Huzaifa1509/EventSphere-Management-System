@@ -7,7 +7,7 @@ import { Outlet } from 'react-router-dom'
 
 const LayoutAttendee = () => {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="dark">
       <div className={cn('min-h-screen bg-background font-sans antialiased')}>
         {/* Header */}
         <header className="sticky top-0 z-50 border-b bg-background">
