@@ -26,10 +26,11 @@ const exhibitorSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    // booths: [{ 
-    //     type: mongoose.Schema.Types.ObjectId, 
-    //     ref: "Booth" 
-    //   }],
+    expoId: { 
+       type: mongoose.Schema.Types.ObjectId, 
+       ref: "Expo", 
+       required: true 
+    },
     createdAt: {
         type: Date,
         default: Date.now,

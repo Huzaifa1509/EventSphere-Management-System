@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/Components/ui/Card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/Toaster"
@@ -13,8 +13,8 @@ const schedule = [
 ]
 
 export function ScheduleManager() {
-    const [bookmarkedSessions, setBookmarkedSessions] = useState<number[]>([])
-    const { toast } = useToast();
+  const [bookmarkedSessions, setBookmarkedSessions] = useState<number[]>([])
+  const { toast } = useToast();
 
   const toggleBookmark = (sessionId: number) => {
     setBookmarkedSessions(prev =>
@@ -41,43 +41,43 @@ export function ScheduleManager() {
   }, {})
 
   return (
-   <>
-   <Card>
-      <CardHeader>
-        <CardTitle>Event Schedule</CardTitle>
-        <CardDescription>Browse and bookmark sessions</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="Day 1">
-          <TabsList>
-            {Object.keys(groupedSchedule).map(day => (
-              <TabsTrigger key={day} value={day}>{day}</TabsTrigger>
-            ))}
-          </TabsList>
-          {Object.entries(groupedSchedule).map(([day, sessions]: [string, any[]]) => (
-            <TabsContent key={day} value={day}>
-              {sessions.map(session => (
-                <div key={session.id} className="flex justify-between items-center mb-4 p-4 bg-secondary rounded-lg">
-                  <div>
-                    <h3 className="font-semibold">{session.title}</h3>
-                    <p className="text-sm text-muted-foreground">{session.time}</p>
-                    <p className="text-sm text-muted-foreground">{session.date}</p>
-                  </div>
-                  <Button
-                    variant={bookmarkedSessions.includes(session.id) ? "secondary" : "outline"}
-                    onClick={() => toggleBookmark(session.id)}
-                  >
-                    {bookmarkedSessions.includes(session.id) ? 'Bookmarked' : 'Bookmark'}
-                  </Button>
-                </div>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Event Schedule</CardTitle>
+          <CardDescription>Browse and bookmark sessions</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="Day 1">
+            <TabsList>
+              {Object.keys(groupedSchedule).map(day => (
+                <TabsTrigger key={day} value={day}>{day}</TabsTrigger>
               ))}
-            </TabsContent>
-          ))}
-        </Tabs>
-      </CardContent>
-    </Card>
-    <Toaster/>
-</>
-)
+            </TabsList>
+            {Object.entries(groupedSchedule).map(([day, sessions]: [string, any[]]) => (
+              <TabsContent key={day} value={day}>
+                {sessions.map(session => (
+                  <div key={session.id} className="flex justify-between items-center mb-4 p-4 bg-secondary rounded-lg">
+                    <div>
+                      <h3 className="font-semibold">{session.title}</h3>
+                      <p className="text-sm text-muted-foreground">{session.time}</p>
+                      <p className="text-sm text-muted-foreground">{session.date}</p>
+                    </div>
+                    <Button
+                      variant={bookmarkedSessions.includes(session.id) ? "secondary" : "outline"}
+                      onClick={() => toggleBookmark(session.id)}
+                    >
+                      {bookmarkedSessions.includes(session.id) ? 'Bookmarked' : 'Bookmark'}
+                    </Button>
+                  </div>
+                ))}
+              </TabsContent>
+            ))}
+          </Tabs>
+        </CardContent>
+      </Card>
+      <Toaster />
+    </>
+  )
 }
 

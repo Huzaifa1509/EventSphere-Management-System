@@ -15,7 +15,7 @@ const upload = uploadImageHandler();
 
 // CORS options
 const corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: 'http://localhost:5173',
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
 };
@@ -48,6 +48,7 @@ app.post('/api/booths', BoothController.addBooth);
 app.get('/api/booths', BoothController.getAllBooths);
 app.get('/api/booths/:expoId', BoothController.getBoothsByExpo);
 app.put('/api/booths/:boothId', BoothController.updateBooth);
+app.put('/api/boothBooked/:boothId', BoothController.BoothIsBooked);
 app.delete('/api/booths/:boothId', BoothController.deleteBooth);
 
 

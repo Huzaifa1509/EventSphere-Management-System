@@ -117,7 +117,6 @@ const CreateExpoEvent = () => {
                                 )}
                             />
 
-                            {/* Description */}
                             <FormField
                                 control={form.control}
                                 name="description"
@@ -132,7 +131,6 @@ const CreateExpoEvent = () => {
                                 )}
                             />
 
-                            {/* Start Date */}
                             <FormField
                                 control={form.control}
                                 name="startDate"

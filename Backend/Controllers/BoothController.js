@@ -104,6 +104,31 @@ const updateBooth = async (req, res) => {
   }
 };
 
+
+const BoothIsBooked = async (req, res) => {
+  const { boothId } = req.params;
+  const { isBooked } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(boothId)) {
+    return res.status(400).json({ message: "Invalid booth ID" });
+  }
+
+  try {
+    const booth = await Booth.findById(boothId);
+    if (!booth) {
+      return res.status(404).json({ message: "Booth not found" });
+    }
+
+    booth.isBooked = isBooked;
+    console.log(booth);
+    await booth.save();
+    return res.status(200).json({ message: "Booth updated successfully", booth });
+  } catch (error) {
+    console.error("Error updating booth:", error);
+    return res.status(500).json({ message: "An error occurred while updating the booth", error: error.message });
+  }
+};
+
 const deleteBooth = async (req, res) => {
   const { boothId } = req.params;
 
@@ -132,4 +157,5 @@ module.exports = {
   getBoothsByExpo,
   updateBooth,
   deleteBooth,
+  BoothIsBooked
 };

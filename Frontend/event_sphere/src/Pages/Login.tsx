@@ -10,7 +10,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useToast } from "@/hooks/use-toast"
 import { Toaster } from '@/Components/ui/Toaster';
-import { EncryptStorage } from 'encrypt-storage';
 
 const formSchema = z.object({
   email: z.string().min(5).max(100).regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[cC][oO][mM]$/),
@@ -20,13 +19,6 @@ const formSchema = z.object({
 const Login = () => {
   const { toast } = useToast()
   const navigate = useNavigate()
-
-  const secretKey = import.meta.env.VITE_SECRET_KEY
-
-  const encryptStorage = new EncryptStorage(secretKey, {
-    localStorage: 'localStorage',
-  });
-
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,8 +38,8 @@ const Login = () => {
         .then(response => {
           console.log(response.data)
           if (response.status === 200 && response.data.token) {
-            encryptStorage.setItem('token', response.data.token);
-            encryptStorage.setItem('user', JSON.stringify(response.data.user));
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
             toast({
               variant: "default",
               title: "Success",

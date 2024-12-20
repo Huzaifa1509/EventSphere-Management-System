@@ -82,6 +82,7 @@ const createExpo = async (req, res) => {
 const updateExpo = async (req, res) => {
   const { expoId } = req.params;
   const { name, description, startDate, endDate, venue, organizerName, organizerContact } = req.body;
+  console.table({ expoId, name, description, startDate, endDate, venue, organizerName, organizerContact });
 
   if (!mongoose.Types.ObjectId.isValid(expoId)) {
     return res.status(400).json({ message: "Invalid expo ID" });
@@ -123,7 +124,7 @@ const updateExpo = async (req, res) => {
     expo.organizerContact = organizerContact || expo.organizerContact;
 
     await expo.save();
-
+    console.log("Expo updated successfully:", expo);
     return res.status(200).json({ message: "Expo updated successfully", expo });
   } catch (error) {
     console.error("Error updating expo:", error);
