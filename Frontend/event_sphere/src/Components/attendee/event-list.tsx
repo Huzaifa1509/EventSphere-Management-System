@@ -1,9 +1,33 @@
-import React, { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/Components/ui/Card'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/Components/ui/Dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import axios from "axios";
+import { useToast } from '@/hooks/use-toast';
+import { Toaster } from '@/Components/ui/Toaster';  
+import { Skeleton } from "../ui/skeleton";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, useForm, FormProvider } from "react-hook-form";
+import { z } from "zod";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/Form";
+
 
 const events = [
   {
@@ -50,7 +74,6 @@ const formSchema = z.object({
   name: z.string().nonempty('Name is required'),
   email: z.string().email('Invalid email address'),
 });
-
 export function EventList({ limit }: EventListProps) {
   const [expos, setExpos] = useState<ExpoEvents[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -114,7 +137,7 @@ export function EventList({ limit }: EventListProps) {
 
   return (
     <div className="pb-4">
-      {loading ? (
+       {loading ? (
         <div className="grid gap-4">
          {Array.from({ length: 6 }).map((_, index) => (
            <Card key={index} className="mb-4">
@@ -153,7 +176,7 @@ export function EventList({ limit }: EventListProps) {
             </CardContent>
             <CardFooter>
             <Dialog>
-                <DialogTrigger asChild>
+            <DialogTrigger asChild>
                   <Button onClick={() => setSelectedEvent(event)}>Register</Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
