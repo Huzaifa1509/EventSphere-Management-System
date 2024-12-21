@@ -91,7 +91,7 @@ export function AppSidebar() {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         navigate('/');
-        window.location.reload(); // Force a page reload
+
     }
 
     return (
@@ -127,15 +127,15 @@ export function AppSidebar() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
                                 side="top"
-                                className="w-[--radix-popper-anchor-width]"
+                                className="w-[--radix-popper-anchor-width] hover:cursor-pointer"
                             >
-                                <DropdownMenuItem>
+                                <DropdownMenuItem className="hover:cursor-pointer">
                                     <span>Account</span>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem className="hover:cursor-pointer">
                                     <span>Billing</span>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={handleLogout}>
+                                <DropdownMenuItem className="hover:cursor-pointer" onClick={handleLogout}>
                                     <span>Sign out</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
