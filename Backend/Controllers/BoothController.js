@@ -4,13 +4,16 @@ const mongoose = require("mongoose");
 
 
 const addBooth = async (req, res) => {
-    const { boothNumber, expoId } = req.body;
+    const { boothNumber, expoId, floor } = req.body;
   
     if (!boothNumber || boothNumber.trim() === '') {
       return res.status(400).json({ message: "Booth number is required" });
     }
     if (!expoId || !mongoose.Types.ObjectId.isValid(expoId)) {
       return res.status(400).json({ message: "Valid expo ID is required" });
+    }
+    if (!floor || floor.trim() === '') {
+      return res.status(400).json({ message: "Floor is required" });
     }
   
     try {
@@ -26,7 +29,7 @@ const addBooth = async (req, res) => {
         return res.status(404).json({ message: "Expo not found" });
       }
   
-      const newBooth = await Booth.create({ boothNumber, expoId });
+      const newBooth = await Booth.create({ boothNumber, expoId, floor });
   
       expo.booths.push(newBooth._id);
       await expo.save();

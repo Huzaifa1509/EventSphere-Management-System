@@ -17,9 +17,10 @@ interface Booth {
   boothNumber: string;
   expoId: {
     _id: string;
-    name: string; // Expo event name
+    name: string; 
   };
-  isBooked: boolean; // Availability status
+  floor: string;
+  isBooked: boolean; 
 }
 
 const ShowAllBooth: React.FC = () => {
@@ -42,8 +43,8 @@ const ShowAllBooth: React.FC = () => {
   }, []);
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-6 text-center">All Booths</h1>
+    <div className="container mx-auto px-4">
+      <h1 className="text-2xl font-semibold mb-6 text-center">All Booths</h1>
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -70,6 +71,9 @@ const ShowAllBooth: React.FC = () => {
                   >
                     {booth.isBooked ? "Booked" : "Available"}
                   </span>
+                </p>
+                <p className="text-sm">
+                  Floor: <span className="font-semibold">{booth.floor == "F1" ? "Ground FLoor" : booth.floor == "F2" ? "First Floor" : "Second Floor"  }</span>
                 </p>
               </CardContent>
             </Card>

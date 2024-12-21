@@ -53,19 +53,24 @@ const adminItems = [
         icon: Home,
     },
     {
-        title: "Expo Events",
+        title: "Create Event",
         url: "expoevents",
         icon: CalendarDays,
     },
     {
-        title: "Booth",
+        title: "Create Booth",
         url: "booth",
         icon: Store,
     },
     {
-        title: "Events",
+        title: "View Events",
         url: "allevents",
         icon: Calendar1,
+    },
+    {
+        title: "View Booths",
+        url: "allbooths",
+        icon: Store,
     },
     {
         title: "Exhibitor",

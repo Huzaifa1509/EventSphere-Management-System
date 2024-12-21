@@ -11,6 +11,10 @@ const boothSchema = new mongoose.Schema({
     ref: "Expo", 
     required: true 
   },
+  floor: {
+    type: String,
+    required: true
+  },
   isBooked: { 
     type: Boolean, 
     default: false 

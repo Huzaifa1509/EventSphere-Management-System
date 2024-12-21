@@ -1,4 +1,4 @@
-import React from 'react';
+import { React, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -12,6 +12,7 @@ import axios from 'axios';
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from '@/Components/ui/Toaster';
 import { Calendar } from "@/Components/ui/Calendar";
+import { Progress } from "@/components/ui/progress";
 import {
     Popover,
     PopoverContent,
@@ -26,13 +27,18 @@ const formSchema = z.object({
     endDate: z.date(),
     venue: z.string().min(5).max(50),
     organizerName: z.string().min(5).max(50),
-    organizerContact: z.string().min(5).max(50),
+    organizerContact: z.string().min(11).max(14),
     totalBooths: z.coerce.number().min(1),
+    totalBoothsf2: z.coerce.number().min(0),
+    totalBoothsf3: z.coerce.number().min(0),
 });
 
 const CreateExpoEvent = () => {
     const { toast } = useToast();
     const navigate = useNavigate();
+    const [progress, setProgress] = useState(0);
+    const [showProgress, setShowProgress] = useState(false);
+    const [loading, setLoading] = useState(false)
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -45,10 +51,13 @@ const CreateExpoEvent = () => {
             organizerName: "",
             organizerContact: "",
             totalBooths: 0,
+            totalBoothsf2: 0,
+            totalBoothsf3: 0
         },
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
+        setLoading(true)
         console.log(values);
 
         try {
@@ -56,12 +65,25 @@ const CreateExpoEvent = () => {
                 .then(response => {
                     console.log(response.data);
                     if (response.status === 201) {
-                        toast({
-                            variant: "default",
-                            title: "Success",
-                            description: "You have created an Expo event successfully",
-                        });
-                        navigate('/dashboard');
+                        setShowProgress(true);
+                        setProgress(0);
+
+                        const interval = setInterval(() => {
+                            setProgress((prev) => {
+                                if (prev >= 100) {
+                                    clearInterval(interval);
+                                    toast({
+                                        variant: "default",
+                                        title: "Success",
+                                        description: "You have created an Expo event successfully",
+                                    });
+                                    navigate('/dashboard');
+                                    setShowProgress(false);
+                                    return 100;
+                                }
+                                return prev + 10;
+                            });
+                        }, 200);
                     }
                 })
                 .catch(error => {
@@ -79,7 +101,10 @@ const CreateExpoEvent = () => {
 
     return (
         <>
-            <div className="flex flex-col items-center justify-center min-h-screen">
+
+            <div className="container flex flex-col justify-center items-center mx-auto px-4 ">
+                {loading ? (<Progress className="w-full" value={progress} />) : null}
+                <h1 className="text-2xl font-semibold mb-6 text-center">Create Event</h1>
                 <Form {...form}>
                     <form
                         method="post"
@@ -236,7 +261,33 @@ const CreateExpoEvent = () => {
                                 name="totalBooths"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Total Booths</FormLabel>
+                                        <FormLabel>Total Booths on Ground Floor</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="10" type="number" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="totalBoothsf2"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Total Booths on First Floor</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="10" type="number" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="totalBoothsf3"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Total Booths on Second Floor</FormLabel>
                                         <FormControl>
                                             <Input placeholder="10" type="number" {...field} />
                                         </FormControl>
@@ -253,6 +304,8 @@ const CreateExpoEvent = () => {
                     </form>
                 </Form>
                 <Link to="/dashboard/allevents" className="text-rose-950 mt-5">Show All Events</Link>
+
+
             </div>
             <Toaster />
         </>

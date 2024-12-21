@@ -141,7 +141,7 @@ const UpdateEvent = () => {
             description: 'Event updated successfully',
           });
 
-          navigate('/dashboard/expoevents');
+          navigate('/dashboard/allevents');
         })
         .catch((error) => {
           console.error(error);

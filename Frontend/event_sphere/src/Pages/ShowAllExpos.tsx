@@ -17,6 +17,8 @@ interface ExpoEvents {
   organizerName: string;
   organizerContact: string;
   totalBooths: number;
+  toalBoothsf2: number;
+  totalBooths3: number;
 }
 
 const ShowAllExpos: React.FC = () => {
@@ -67,9 +69,9 @@ const ShowAllExpos: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <div className="container mx-auto py-8">
-        <h1 className="text-2xl font-bold mb-6 text-center">All Events</h1>
+
+      <div className="container mx-auto px-8">
+        <h1 className="text-2xl font-semibold mb-6 text-center">All Events</h1>
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -119,7 +121,7 @@ const ShowAllExpos: React.FC = () => {
                     <span className="font-semibold">Organizer Contact:</span> {expo.organizerContact}
                   </p>
                   <p className="text-sm">
-                    <span className="font-semibold">Total Booths:</span> {expo.totalBooths}
+                    <span className="font-semibold">Total Booths:</span> {expo.totalBooths + expo.totalBoothsf3 + expo.totalBoothsf2}
                   </p>
                 </CardContent>
                 <CardFooter className="flex justify-between text-sm border-t border-slate-700 pt-2">
@@ -138,7 +140,7 @@ const ShowAllExpos: React.FC = () => {
         )}
       </div>
 
-    </div>
+
   );
 };
 

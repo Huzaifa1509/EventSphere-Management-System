@@ -37,6 +37,12 @@ const expoSchema = new mongoose.Schema({
     required: [true, "Total booths are required"], 
     min: [1, "Total booths must be at least 1"] 
   },
+  totalBoothsf2: { 
+    type: Number, 
+  },
+  totalBoothsf3: { 
+    type: Number, 
+  },
   createdAt: { 
     type: Date, 
     default: Date.now 

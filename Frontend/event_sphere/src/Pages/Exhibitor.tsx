@@ -103,9 +103,9 @@ const Exhibitor = () => {
 
       // Step 1: Post the exhibitor data
       axios
-        .post('/api/exhibitor', { 
-          ...form.getValues(),       
-          boothId: selectedBooth._id 
+        .post('/api/exhibitor', {
+          ...form.getValues(),
+          boothId: selectedBooth._id
         }, {
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -124,7 +124,7 @@ const Exhibitor = () => {
           return axios.put(
             `/api/boothBooked/${selectedBooth._id}`,
             { isBooked: true },
-            { headers: { 'Content-Type': 'application/json','Authorization': `Bearer ${token}` } }
+            { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } }
           )
             .then((response) => {
               console.log(response);
@@ -167,7 +167,8 @@ const Exhibitor = () => {
   return (
     <>
 
-      <div className="flex flex-col items-center justify-center h-screen">
+      <div className="container flex flex-col justify-center items-center mx-auto px-4 ">
+        <h1 className="text-2xl font-semibold mb-6 text-center">Create Exhibitor</h1>
         <Form {...form}>
           <form
             method="post"

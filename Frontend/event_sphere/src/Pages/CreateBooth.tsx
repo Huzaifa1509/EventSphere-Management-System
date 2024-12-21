@@ -30,16 +30,15 @@ import { Toaster } from '@/Components/ui/Toaster';
 const formSchema = z.object({
     boothNumber: z.string().min(4).max(4),
     expoId: z.string().nonempty('Please select an event'),
+    floor: z.string().min(1).max(2),
 });
 
 const CreateBooth = () => {
     const { toast } = useToast();
     const navigate = useNavigate();
 
-    // State to hold fetched ExpoEvents
     const [expoEvents, setExpoEvents] = useState<Array<{ id: string; name: string }>>([]);
 
-    // Fetch all ExpoEvents dynamically
     useEffect(() => {
         const fetchExpoEvents = async () => {
             try {
@@ -58,16 +57,15 @@ const CreateBooth = () => {
         fetchExpoEvents();
     }, [toast]);
 
-    // React Hook Form setup
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             boothNumber: '',
             expoId: '',
+            floor: '',
         },
     });
 
-    // Submit Handler
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
             const response = await axios.post('/api/booths', values);
@@ -91,14 +89,14 @@ const CreateBooth = () => {
 
     return (
         <>
-            <div className="flex flex-col items-center justify-center h-screen">
+            <div className="container flex flex-col justify-center items-center mx-auto px-4 ">
+            <h1 className="text-2xl font-semibold mb-6 text-center">Create Booth</h1>
                 <Form {...form}>
                     <form
                         method="post"
                         onSubmit={form.handleSubmit(onSubmit)}
                         className="space-y-8 bg-slate-900 text-white p-5 rounded-2xl w-full max-w-4xl"
                     >
-                        {/* Form Wrapper for Two Columns */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
@@ -114,7 +112,6 @@ const CreateBooth = () => {
                                 )}
                             />
 
-                            {/* Dropdown to Select Expo Event */}
                             <FormField
                                 control={form.control}
                                 name="expoId"
@@ -139,9 +136,37 @@ const CreateBooth = () => {
                                     </FormItem>
                                 )}
                             />
+                            <FormField
+                                control={form.control}
+                                name="floor"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Floor</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select Floor" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="F1">
+                                                    Ground Floor
+                                                </SelectItem>
+                                                <SelectItem value="F2">
+                                                    First Floor
+                                                </SelectItem>
+                                                <SelectItem value="F3">
+                                                    Second Floor
+                                                </SelectItem>
+
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                         </div>
 
-                        {/* Submit Button */}
                         <Button
                             className="w-full bg-white text-black hover:bg-black hover:text-white"
                             type="submit"

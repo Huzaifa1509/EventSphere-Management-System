@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 
 // Create Expo
 const createExpo = async (req, res) => {
-  const { name, description, startDate, endDate, venue, organizerName, organizerContact, totalBooths } = req.body;
+  const { name, description, startDate, endDate, venue, organizerName, organizerContact, totalBooths, totalBoothsf2, totalBoothsf3 } = req.body;
 
   //validations
   if (!name || name.trim() === '') {
@@ -35,9 +35,9 @@ const createExpo = async (req, res) => {
   if (!organizerName || organizerName.trim() === '') {
     return res.status(400).json({ message: "Organizer name is required" });
   }
-  if (!organizerContact || !/^\d{10}$/.test(organizerContact)) {
-    return res.status(400).json({ message: "Organizer contact must be a 11-digit number" });
-  }
+  if (!organizerContact || !/^\d{11,14}$/.test(organizerContact)) {
+    return res.status(400).json({ message: "Organizer contact must be between 11 and 14 digits" });
+  }  
   if (!totalBooths || totalBooths < 1) {
     return res.status(400).json({ message: "Total booths must be at least 1" });
   }
@@ -56,20 +56,51 @@ const createExpo = async (req, res) => {
       venue,
       organizerName,
       organizerContact,
-      totalBooths
+      totalBooths,
+      totalBoothsf2,
+      totalBoothsf3
     });
 
     const expoId = newExpo._id;
 
 
-    const booths = [];
-    for (let i = 0; i < totalBooths; i++) {
-      const boothNumber = Math.floor(1000 + Math.random() * 9000).toString();
-      booths.push({ boothNumber, expoId });
-        }
-    const createdBooths = await Booth.insertMany(booths);
+    const createBooths = async (count, floor, expoId) => {
+      const booths = [];
+      for (let i = 0; i < count; i++) {
+        let boothNumber;
+        let existingBoothNumber;
+        do {
+          boothNumber = Math.floor(1000 + Math.random() * 9000).toString();
+          existingBoothNumber = await Booth.findOne({ boothNumber });
+          if (existingBoothNumber) {
+            console.log(`Duplicate booth number detected: ${boothNumber}`);
+          }
+        } while (existingBoothNumber);
+      
+        booths.push({ boothNumber, expoId, floor });
+      }
+      try {
+        return await Booth.insertMany(booths);
 
-    newExpo.booths = createdBooths.map(booth => booth._id);
+      } catch (error) {
+        console.error(`Error inserting booths for floor ${floor}:`, error);
+        throw new Error(`Failed to insert booths for floor ${floor}`);
+      }
+    };
+
+    const [createdBoothsF1, createdBoothsF2, createdBoothsF3] = await Promise.all([
+      createBooths(totalBooths, "F1", expoId),
+      totalBoothsf2 > 0 ? createBooths(totalBoothsf2, "F2", expoId) : [],
+      totalBoothsf3 > 0 ? createBooths(totalBoothsf3, "F3", expoId) : []
+    ]);
+
+    const allBoothIds = [
+      ...createdBoothsF1.map(booth => booth._id),
+      ...createdBoothsF2.map(booth => booth._id),
+      ...createdBoothsF3.map(booth => booth._id)
+    ];
+
+    newExpo.booths = allBoothIds;
     await newExpo.save();
 
     return res.status(201).json({ message: "Expo and booths created successfully", expo: newExpo });
