@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/Components/ui/Skeleton";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/Dialog"; // Shadcn Dialog Components
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/Button";
@@ -50,55 +50,55 @@ const Attendee: React.FC = () => {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="dark">
-    <div className="container mx-auto">
-      <h1 className="text-4xl font-bold mb-10">Welcome Back Attendee</h1>
-      
-      <div className="mb-12">
-        <Card>
-          <CardHeader>
-            <CardTitle>Upcoming Events</CardTitle>
-            <CardDescription>Don't miss out on these exciting events</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <EventList limit={2} />
-          </CardContent>
-          <CardFooter>
-            <Button asChild>
-              <Link to="events">View All Events</Link>
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
+      <div className="container mx-auto">
+        <h1 className="text-4xl font-bold mb-10">Welcome Back Attendee</h1>
 
-      <div className="grid gap-8 md:grid-cols-2 mb-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Exhibitors</CardTitle>
-            <CardDescription>Explore exhibitor profiles</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">Discover innovative companies and connect with industry leaders.</p>
-            <Button asChild>
-              <Link to="exhibitor">Find Exhibitors</Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Schedule</CardTitle>
-            <CardDescription>Plan your event experience</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">Browse sessions, create your personal agenda, and never miss a beat.</p>
-            <Button asChild>
-              <Link to="schedule">Check Schedule</Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="mb-12">
+          <Card>
+            <CardHeader>
+              <CardTitle>Upcoming Events</CardTitle>
+              <CardDescription>Don't miss out on these exciting events</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <EventList limit={2} />
+            </CardContent>
+            <CardFooter>
+              <Button asChild>
+                <Link to="events">View All Events</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+
+        <div className="grid gap-8 md:grid-cols-2 mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Exhibitors</CardTitle>
+              <CardDescription>Explore exhibitor profiles</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="mb-4">Discover innovative companies and connect with industry leaders.</p>
+              <Button asChild>
+                <Link to="exhibitor">Find Exhibitors</Link>
+              </Button>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Schedule</CardTitle>
+              <CardDescription>Plan your event experience</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="mb-4">Browse sessions, create your personal agenda, and never miss a beat.</p>
+              <Button asChild>
+                <Link to="schedule">Check Schedule</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
     </ThemeProvider>
-    );
+  );
 };
 
 export default Attendee;

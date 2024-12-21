@@ -45,9 +45,9 @@ const Login = () => {
               title: "Success",
               description: "You have been logged in successfully",
             })
-            
+
             const userRole = response.data.user.role;
-            if (userRole === 'ATTENDEE'){
+            if (userRole === 'ATTENDEE') {
               navigate('/dashboard/attendee');
             } else {
               navigate('/dashboard');
@@ -58,7 +58,7 @@ const Login = () => {
           console.log(error)
           console.error("Error: ", error.response.data.message);
           toast({
-            variant: "default",
+            variant: "destructive",
             title: "Error",
             description: error.response.data.message,
           })

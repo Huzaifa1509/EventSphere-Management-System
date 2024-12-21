@@ -21,8 +21,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { useToast } from '@/hooks/use-toast';
-import { Toaster } from '@/Components/ui/Toaster';  
-import { Skeleton } from "../ui/skeleton";
+import { Toaster } from '@/Components/ui/Toaster';
+import { Skeleton } from "../ui/Skeleton";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
@@ -83,7 +83,7 @@ export function EventList({ limit }: EventListProps) {
       email: '',
     },
   });
-  
+
   const handleRegister = async (values: z.infer<typeof formSchema>) => {
     if (!selectedEvent) return;
 
@@ -112,31 +112,31 @@ export function EventList({ limit }: EventListProps) {
 
   return (
     <div className="pb-4">
-       {loading ? (
+      {loading ? (
         <div className="grid gap-4">
-         {Array.from({ length: 6 }).map((_, index) => (
-           <Card key={index} className="mb-4">
-             <CardHeader>
-               <Skeleton className="h-6 w-3/4 mb-2" />
-               <Skeleton className="h-6 w-1/2" />
-             </CardHeader>
-             <CardContent>
-               <Skeleton className="h-40 w-full rounded-lg" />
-             </CardContent>
-             <CardFooter>
-               <Skeleton className="h-10 w-1/4" />
-             </CardFooter>
-           </Card>
-         ))}
-       </div>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Card key={index} className="mb-4">
+              <CardHeader>
+                <Skeleton className="h-6 w-3/4 mb-2" />
+                <Skeleton className="h-6 w-1/2" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-40 w-full rounded-lg" />
+              </CardContent>
+              <CardFooter>
+                <Skeleton className="h-10 w-1/4" />
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
       ) : (
         displayedEvents.map((event) => (
           <Card key={event._id} className="mb-4">
             <CardHeader>
               <CardTitle>{event.name}</CardTitle>
-                <CardDescription>
-                  {event.startDate.toDateString()} -{" "}
-                  {event.endDate.toDateString()} | {event.venue}
+              <CardDescription>
+                {event.startDate.toDateString()} -{" "}
+                {event.endDate.toDateString()} | {event.venue}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -150,8 +150,8 @@ export function EventList({ limit }: EventListProps) {
               </p>
             </CardContent>
             <CardFooter>
-            <Dialog>
-            <DialogTrigger asChild>
+              <Dialog>
+                <DialogTrigger asChild>
                   <Button onClick={() => setSelectedEvent(event)}>Register</Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
