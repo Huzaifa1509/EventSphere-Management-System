@@ -135,7 +135,7 @@ const updateExpo = async (req, res) => {
 
 const getAllExpos = async (req, res) => {
   try {
-    const expos = await Expo.find().populate("booths");
+    const expos = await Expo.find().populate("booths").sort({ startDate: -1 });
     return res.status(200).json(expos);
   } catch (error) {
     return res.status(500).json({ message: "An error occurred while fetching expos", error: error.message });

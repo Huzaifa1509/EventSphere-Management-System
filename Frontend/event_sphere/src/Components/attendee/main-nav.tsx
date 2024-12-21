@@ -12,10 +12,10 @@ export function MainNav() {
   return (
     <nav className="flex items-center space-x-4 lg:space-x-6">
       <Link
-        to="/attendee"
+        to=""
         className={cn(
           "text-sm font-medium transition-colors hover:text-primary",
-          location.pathname === "/attendee" ? "text-primary" : "text-muted-foreground"
+          location.pathname === "" ? "text-primary" : "text-muted-foreground"
         )}
       >
         Home

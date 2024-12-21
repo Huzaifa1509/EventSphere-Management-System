@@ -45,7 +45,13 @@ const Login = () => {
               title: "Success",
               description: "You have been logged in successfully",
             })
-            navigate('/dashboard')
+            
+            const userRole = response.data.user.role;
+            if (userRole === 'ATTENDEE'){
+              navigate('/dashboard/attendee');
+            } else {
+              navigate('/dashboard');
+            }
           }
         })
         .catch(error => {

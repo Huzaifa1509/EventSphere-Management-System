@@ -35,17 +35,11 @@ const router = createBrowserRouter(
       <Route path="verify/:otp" element={<VerifyCode />} />
       <Route path="exhibitor" element={<Exhibitor />} />
       <Route path="expoevents" element={<CreateExpoEvent />} />
-      
+      <Route path="attendee" element={<Attendee />} />
+
  
     </Route>
-    
-      <Route path="/attendee" element={<LayoutAttendee />}>
-      <Route index element={<Attendee />} />
-      <Route path="events" element={<EventList />} />
-      <Route path="exhibitor" element={<ExhibitorSearch />} />
-      <Route path="schedule" element={<ScheduleManager />} />
-
-      </Route> 
+  
 
     <Route path="/dashboard" element={<ProtectedRoute />}>
       <Route index element={<Dashboard />} />
@@ -56,6 +50,14 @@ const router = createBrowserRouter(
       <Route path="allevents" element={<ShowAllExpos />} />
       <Route path="exhibitor" element={<Exhibitor />} />
       <Route path="AllRequests" element={<AllRequests/>} />
+
+      <Route path="attendee" element={<LayoutAttendee />}>
+      <Route index element={<Attendee />} />
+      <Route path="events" element={<EventList />} />
+      <Route path="exhibitor" element={<ExhibitorSearch />} />
+      <Route path="schedule" element={<ScheduleManager />} />
+      </Route> 
+
     </Route>
   </>
   )
