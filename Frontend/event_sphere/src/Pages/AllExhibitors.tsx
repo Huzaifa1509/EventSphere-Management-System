@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/Componen
 import { Toaster } from '@/Components/ui/Toaster';
 import { useToast } from "@/hooks/use-toast"
 
-const AllRequests = () => {
+const AllExhibitors = () => {
   const { toast } = useToast()
   const [requests, setRequests] = useState([]);
   const token = localStorage.getItem("token");
@@ -13,7 +13,7 @@ const AllRequests = () => {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await axios.get('/api/exhibitor',{ headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } });
+        const response = await axios.get('/api/exhibitor', { headers: { 'Content-Type': 'application/json','Authorization': `Bearer ${token}` } });
         setRequests(response.data);
       } catch (error) {
         console.error('Error fetching requests:', error);
@@ -24,19 +24,21 @@ const AllRequests = () => {
   }, []);
 
 
-  const handleAccept = async (requestId) => {
+  const ContactInfoGet = async (requestId) => {
     try {
-        axios.put(
-            `/api/exhibitor/${requestId}`,
-            { isAccepted: true },
-            { headers: { 'Content-Type': 'application/json','Authorization': `Bearer ${token}` } }
+        axios.get(
+            `/api/exhibitor/contact-info-exchange/${requestId}`,
+            { 
+              params: { isAccepted: true },
+              headers: { 'Authorization': `Bearer ${token}` }
+            }
           )
             .then((response) => {
               console.log(response);
               toast({
                 variant: "success",
-                title: "Request Accepted Successfully",
-                description: `Exhibitor has been accepted successfully.`,
+                title: "Contact Recieved Successfully",
+                description: `Please check your email for the contact information.`,
               });
             })
     } catch (error) {
@@ -44,31 +46,11 @@ const AllRequests = () => {
     }
   };
 
-  const handleReject = async (requestId) => {
-    try {
-        axios.put(
-            `/api/exhibitor/${requestId}`,
-            { isAccepted: false },
-            { headers: { 'Content-Type': 'application/json','Authorization': `Bearer ${token}` } }
-          )
-            .then((response) => {
-              console.log(response);
-              toast({
-                variant: "danger",
-                title: "Request Rejected Successfully",
-                description: `Exhibitor has been rejected successfully.`,
-              });
-            })
-    } catch (error) {
-      console.error('Error:', error);
-    }
-}
-
   return (
     <>
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">All Company Booth Requests</h1>
-      <div className="space-y-4">
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">All Exhibitors Company</h1>
+      <div className="space-y-4grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {requests.map((request) => (
           <div key={request.id} className="flex justify-center">
             <Card className="w-full max-w-md bg-slate-800 text-white">
@@ -79,7 +61,7 @@ const AllRequests = () => {
                 <p className="text-sm mt-2">
                     <strong>Company Description:</strong>  {request.companyDescription}</p>
                 <p className="text-sm mt-2">
-                  <strong>Booth No:</strong> {request.boothId.boothNumber}
+                  <strong>Occupied Booth No:</strong> {request.boothId.boothNumber}
                 </p>
                 <p className="text-sm mt-2">
                   <strong>Product Name:</strong> {request.productName}
@@ -87,25 +69,19 @@ const AllRequests = () => {
                 <p className="text-sm mt-2">
                   <strong>Product Description:</strong> {request.productDescription}
                 </p>
-                <p className="text-sm mt-2 p-3">
-                  <strong>Required Document:</strong> <img className='p-2 h-auto max-w-full transition-all duration-300 rounded-lg blur-sm hover:blur-none' src={request.requireDocument} alt="Document Image" />
-                </p>
-                <p className="text-sm">
+                <p className="text-sm mt-2">
                   <strong>Created At:</strong> {new Date(request.createdAt).toLocaleDateString()}
+                </p>
+                <p className="text-sm mt-2">
+                  <strong>Created By:</strong> {request.userId.name}
                 </p>
               </CardContent>
               <CardFooter className="flex justify-end p-4">
                 <Button
                   className='m-2 w-full bg-green-500 text-white hover:bg-green-600 hover:text-gray-100 py-2 px-4 rounded'
-                  onClick={() => handleAccept(request._id)}
+                  onClick={() => ContactInfoGet(request._id)}
                 >
-                  Accept
-                </Button>
-                <Button
-                  className="m-2 w-full bg-red-500 text-white hover:bg-red-600 hover:text-gray-100 py-2 px-4 rounded"
-                  onClick={() => handleReject(request._id)}
-                >
-                  Reject
+                  Share Contact Info
                 </Button>
               </CardFooter>
             </Card>
@@ -119,4 +95,4 @@ const AllRequests = () => {
   );
 };
 
-export default AllRequests;
+export default AllExhibitors;
