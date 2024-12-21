@@ -13,7 +13,6 @@ import { useToast } from "@/hooks/use-toast"
 import { Toaster } from '@/Components/ui/Toaster';
 import { Textarea } from "@/Components/ui/Textarea"
 import Modal from "react-modal";
-import { jwtDecode } from 'jwt-decode';
 
 const formSchema = z.object({
   companyName: z.string().min(5).max(50),
@@ -52,8 +51,7 @@ const Exhibitor = () => {
         });
       }
     };
-    const tokenData = jwtDecode(token);
-    console.log(tokenData);
+
     fetchExpos();
   }, []);
 
@@ -111,6 +109,7 @@ const Exhibitor = () => {
         }, {
           headers: {
             'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`
           },
         })
         .then((response) => {
@@ -125,7 +124,7 @@ const Exhibitor = () => {
           return axios.put(
             `/api/boothBooked/${selectedBooth._id}`,
             { isBooked: true },
-            { headers: { 'Content-Type': 'application/json' } }
+            { headers: { 'Content-Type': 'application/json','Authorization': `Bearer ${token}` } }
           )
             .then((response) => {
               console.log(response);
@@ -162,13 +161,6 @@ const Exhibitor = () => {
   const onSubmit = async (values) => {
     await fetchBooths(values.expoId);
     setIsModalOpen(true);
-    setCompanyDescription(values.companyDescription);
-    setCompanyName(values.companyName);
-    setProductName(values.productName);
-    setProductDescription(values.productDescription);
-    setServices(values.services);
-    setExpoId(values.expoId);
-    setRequireDocument(values.requireDocument);
   };
 
 
