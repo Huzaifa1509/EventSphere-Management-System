@@ -7,21 +7,21 @@ import { Outlet } from 'react-router-dom'
 
 const LayoutAttendee = () => {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <div className={cn('min-h-screen bg-background font-sans antialiased')}>
+    <ThemeProvider attribute="class" defaultTheme="dark">
+      {/* <div className={cn('min-h-screen bg-background font-sans antialiased')}> */}
         {/* Header */}
-        <header className="sticky top-0 z-50 border-b bg-background">
+        {/* <header className="sticky top-0 z-50 border-b bg-background">
           <div className="container flex h-16 mx-5 items-center justify-between">
             <MainNav />
             <UserNav />
           </div>
-        </header>
+        </header> */}
 
         {/* Main Content */}
         <main className="flex-1 pt-8 container mx-auto">
           <Outlet />
         </main>
-      </div>
+      {/* </div> */}
     </ThemeProvider>
   )
 }

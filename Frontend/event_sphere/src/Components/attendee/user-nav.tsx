@@ -1,5 +1,5 @@
 import React from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/Avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -9,14 +9,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/Components/ui/Dropdown-menu"
+} from "@/components/ui/dropdown-menu"
 import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 export function UserNav() {
-  // Logout function placeholder
+
+  const navigate = useNavigate();
+
   const handleLogout = () => {
     console.log("Logging out...");
-    // Handle the logout logic here (e.g., clearing user data, tokens, etc.)
+    localStorage.removeItem('token'); 
+    localStorage.removeItem('user'); 
+    navigate('/');
   }
 
   return (

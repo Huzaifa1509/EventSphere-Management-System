@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { Skeleton } from "@/Components/ui/Skeleton";
-import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/Components/ui/Dialog"; // Shadcn Dialog Components
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/Components/ui/Card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/Dialog"; // Shadcn Dialog Components
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/Button";
 import { Trash2, Edit } from "lucide-react"; // Icons for delete and edit
 import { useToast } from "@/hooks/use-toast"; // For toast notifications
@@ -12,6 +12,7 @@ import { Calendar } from "@/components/ui/Calendar"; // Calendar component
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover"; // Popover component
 import { EventList } from '@/components/attendee/event-list';
 import LayoutAttendee from '@/Components/attendee/layout-attendee'
+import { ThemeProvider } from "@/Components/attendee/theme-provider";
 
 
 
@@ -48,9 +49,10 @@ const Attendee: React.FC = () => {
   // }, []);
 
   return (
+    <ThemeProvider attribute="class" defaultTheme="dark">
     <div className="container mx-auto">
       <h1 className="text-4xl font-bold mb-10">Welcome Back Attendee</h1>
-
+      
       <div className="mb-12">
         <Card>
           <CardHeader>
@@ -95,7 +97,8 @@ const Attendee: React.FC = () => {
         </Card>
       </div>
     </div>
-  );
+    </ThemeProvider>
+    );
 };
 
 export default Attendee;
