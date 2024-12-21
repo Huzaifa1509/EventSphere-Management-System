@@ -10,7 +10,7 @@ function ProtectedRoute() {
         <SidebarProvider>
           <AppSidebar />
           <SidebarTrigger />
-          <main className="ml-0 transition-all duration-300 ease-in-out md:ml-[--sidebar-width] md:peer-data-[state=collapsed]:ml-0">
+          <main className="ml-0 transition-all duration-300 ease-in-out  md:peer-data-[state=collapsed]:ml-0">
             
             <Outlet />
             

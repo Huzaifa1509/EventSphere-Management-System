@@ -1,6 +1,6 @@
 import React from "react"
 import { User, Home, CalendarDays, Calendar1, Store, User2, ChevronUp } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 import {
     Sidebar,
@@ -21,8 +21,38 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/Dropdown-menu"
 
+
+const attendeeItems = [
+    {
+        title: "Home",
+        url: "/dashboard/attendee",
+        icon: Home,
+    },
+    {
+        title: "Events",
+        url: "/dashboard/attendee/events",
+        icon: Calendar1,
+    },
+    {
+        title: "Exhibitors",
+        url: "/dashboard/attendee/exhibitor",
+        icon: User,
+    },
+    {
+        title: "Schedule",
+        url: "/dashboard/attendee/schedule",
+        icon: CalendarDays,
+    }
+]
+
+const organizerItems = [
+];
+
+const exhibitorItems = [ 
+];
+
 // Menu items.
-const items = [
+const adminItems = [
     {
         title: "Home",
         url: "/dashboard",
@@ -51,6 +81,29 @@ const items = [
 ]
 
 export function AppSidebar() {
+    const navigate = useNavigate();
+
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    let items = [];
+    if (user.role === "ADMIN") {
+        items = adminItems;
+    } else if (user.role === "ORGANIZER") {
+        items = organizerItems;
+    } else if (user.role === "EXHIBITOR") {
+        items = exhibitorItems;
+    }else{
+        items = attendeeItems;
+    }
+
+    const handleLogout = () => {
+        console.log("Logging out...");
+        localStorage.removeItem('token'); 
+        localStorage.removeItem('user'); 
+        navigate('/');
+        window.location.reload(); // Force a page reload
+    }
+
     return (
         <Sidebar className="dark" side="left" variant="floating" collapsible="icon">
             <SidebarContent>
@@ -92,7 +145,7 @@ export function AppSidebar() {
                                 <DropdownMenuItem>
                                     <span>Billing</span>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem onClick={handleLogout}>
                                     <span>Sign out</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

@@ -28,31 +28,6 @@ import { Form, useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/Form";
 
-
-const events = [
-  {
-    id: 1,
-    title: 'Tech Expo 2023',
-    date: 'October 1-3, 2023',
-    location: 'Convention Center, City',
-    description: 'Join us for an exciting event featuring the latest innovations in technology.',
-  },
-  {
-    id: 2,
-    title: 'AI Summit',
-    date: 'November 15-17, 2023',
-    location: 'Tech Hub, Silicon Valley',
-    description: 'Explore the future of Artificial Intelligence and its impact on various industries.',
-  },
-  {
-    id: 3,
-    title: 'Startup Showcase',
-    date: 'December 5-7, 2023',
-    location: 'Innovation Center, New York',
-    description: 'Discover groundbreaking ideas from the most promising startups in the tech industry.',
-  },
-]
-
 interface EventListProps {
   limit?: number;
 }
