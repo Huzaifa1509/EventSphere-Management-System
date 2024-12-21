@@ -80,8 +80,8 @@ export function AppSidebar() {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
     let items = [];
-    if (user.role === "ADMIN") {
-        items = adminItems;
+    if (user.role === "ATTENDEE") {
+        items = attendeeItems;
     } else {
         items = adminItems;
     }
