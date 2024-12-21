@@ -20,6 +20,7 @@ import LayoutAttendee  from './Components/attendee/layout-attendee.tsx'
 import UpdateEvent from './Pages/UpdateEvent.tsx'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, Navigate } from 'react-router-dom'
 import ProtectedRoute from './ProtectedRoute.jsx'
+import AllRequests from './Pages/AllRequests.tsx'
 
 const value = localStorage.getItem('token');
 
@@ -54,6 +55,7 @@ const router = createBrowserRouter(
       <Route path="allbooths" element={<ShowAllBooth />} />
       <Route path="allevents" element={<ShowAllExpos />} />
       <Route path="exhibitor" element={<Exhibitor />} />
+      <Route path="AllRequests" element={<AllRequests/>} />
     </Route>
   </>
   )

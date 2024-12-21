@@ -63,7 +63,8 @@ app.get('/api/user-schedule', protect, AttendeeController.getUserSchedule);
 
 // Exhibitor routes
 app.post('/api/exhibitor',upload.single('requireDocument') , exhibitorController.createExhibitor); ///to create an Expo
-// app.get('/api/exhibitor', expoController.getAllExpos); //to get all Expos
+app.get('/api/exhibitor', exhibitorController.getAllExhibitorsCompany); //to get all Expos
+app.put('/api/exhibitor/:ExhibitorId', exhibitorController.ExhibitorIsAccepted);
 // app.get('/api/exhibitor/:exhibitorId', expoController.getExpoById); /// to get a specific Expo by ID
 // app.delete('/api/exhibitor/:exhibitorId', expoController.deleteExpo); //to delete an Expo
 

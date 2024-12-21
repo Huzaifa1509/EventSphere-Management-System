@@ -107,7 +107,7 @@ const updateBooth = async (req, res) => {
 
 const BoothIsBooked = async (req, res) => {
   const { boothId } = req.params;
-  const { isBooked } = req.params;
+  const { isBooked } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(boothId)) {
     return res.status(400).json({ message: "Invalid booth ID" });
@@ -119,7 +119,7 @@ const BoothIsBooked = async (req, res) => {
       return res.status(404).json({ message: "Booth not found" });
     }
 
-    booth.isBooked = isBooked;
+    booth.isBooked = Boolean(isBooked);
     console.log(booth);
     await booth.save();
     return res.status(200).json({ message: "Booth updated successfully", booth });

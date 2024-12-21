@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 
 const createExhibitor = async (req, res) => {
   
-  const { companyName, companyDescription, productName, productDescription, services, expoId} = req.body;
+  const { companyName, companyDescription, productName, productDescription, services, expoId, boothId} = req.body;
   // Check required fields
   if (!companyName || companyName.trim() === '') {
     return res.status(400).json({ message: "Company name is required" });
@@ -34,6 +34,7 @@ const createExhibitor = async (req, res) => {
       services,
       requireDocument: requireDocumentUrl,
       expoId,
+      boothId,
     });
 
     await newExhibitor.save();
@@ -52,16 +53,48 @@ const createExhibitor = async (req, res) => {
 };
 
   
-// const getAllExpos = async (req, res) => {
-//     try {
-//       const expos = await Expo.find().populate("booths"); // Populate booths for each expo
-//       return res.status(200).json(expos);
-//     } catch (error) {
-//       console.error("Error fetching expos:", error);
-//       return res.status(500).json({ message: "An error occurred while fetching expos", error: error.message });
-//     }
-//   };
+const getAllExhibitorsCompany = async (req, res) => {
+    try {
+      const ExhibitorsCompany = await Exhibitor.find()
+      .populate({
+        path: 'expoId', 
+        model: 'Expo',
+      })
+      .populate({
+        path: 'boothId', 
+        model: 'Booth',
+      });
+      return res.status(200).json(ExhibitorsCompany);
+    } catch (error) {
+      console.error("Error fetching expos:", error);
+      return res.status(500).json({ message: "An error occurred while fetching expos", error: error.message });
+    }
+  };
   
+  const ExhibitorIsAccepted = async (req, res) => {
+    const { ExhibitorId } = req.params;
+    const { isAccepted } = req.body;
+  
+    if (!mongoose.Types.ObjectId.isValid(ExhibitorId)) {
+      return res.status(400).json({ message: "Invalid Exhibior ID" });
+    }
+  
+    try {
+      const AcceptExhibitor = await Exhibitor.findById(ExhibitorId);
+      if (!AcceptExhibitor) {
+        return res.status(404).json({ message: "Exhibior not found" });
+      }
+  
+      AcceptExhibitor.isAccepted = Boolean(isAccepted);
+      console.log(AcceptExhibitor);
+      await AcceptExhibitor.save();
+
+      return res.status(200).json({ message: "Exhibitor Request Accepted Successfully", AcceptExhibitor });
+    } catch (error) {
+      console.error("Error updating booth:", error);
+      return res.status(500).json({ message: "An error occurred while updating the Exhibitor", error: error.message });
+    }
+  };
 //   // Get a single Expo by ID
 //   const getExpoById = async (req, res) => {
 //     const { expoId } = req.params;
@@ -107,7 +140,8 @@ const createExhibitor = async (req, res) => {
 
 module.exports = {
     createExhibitor,
-//   getAllExpos,
+    getAllExhibitorsCompany,
+    ExhibitorIsAccepted,
 //   getExpoById,
 //   deleteExpo
 };

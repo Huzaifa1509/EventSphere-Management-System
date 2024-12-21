@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Toaster } from '@/Components/ui/Toaster';
 import { Textarea } from "@/Components/ui/Textarea"
 import Modal from "react-modal";
-
+import { jwtDecode } from 'jwt-decode';
 
 const formSchema = z.object({
   companyName: z.string().min(5).max(50),
@@ -35,14 +35,7 @@ const Exhibitor = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [booths, setBooths] = useState([]);
   const [selectedBooth, setSelectedBooth] = useState(null);
-  const [companyName, setCompanyName] = useState(null);
-  const [companyDescription, setCompanyDescription] = useState(null);
-  const [productName, setProductName] = useState(null);
-  const [productDescription, setProductDescription] = useState(null);
-  const [services, setServices] = useState(null);
-  const [expoId, setExpoId] = useState(null);
-  const [requireDocument, setRequireDocument] = useState(null);
-
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchExpos = async () => {
@@ -59,7 +52,8 @@ const Exhibitor = () => {
         });
       }
     };
-
+    const tokenData = jwtDecode(token);
+    console.log(tokenData);
     fetchExpos();
   }, []);
 
@@ -111,7 +105,10 @@ const Exhibitor = () => {
 
       // Step 1: Post the exhibitor data
       axios
-        .post('/api/exhibitor', form.getValues(), {
+        .post('/api/exhibitor', { 
+          ...form.getValues(),       
+          boothId: selectedBooth._id 
+        }, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -136,45 +133,11 @@ const Exhibitor = () => {
                 variant: "default",
                 title: "Booth Booked",
                 description: `Booth ${selectedBooth.boothNumber} has been booked successfully.`,
-              })
-
-            })
-            .then(() => {
-              toast({
-                variant: "default",
-                title: "Booth Booked",
-                description: `Booth ${selectedBooth.boothNumber} has been booked successfully.`,
               });
               setIsModalOpen(false);
               fetchBooths(selectedBooth.expoId);
             })
-
         })
-        // Step 2: Update the booth's booking status
-        // return axios.put(
-        //   `/api/boothBooked/${selectedBooth._id}`,
-        //   { isBooked: true },
-        //   { headers: { 'Content-Type': 'application/json' } }
-        // )
-        //   .then((response) => {
-        //     console.log(response);
-        //     toast({
-        //       variant: "default",
-        //       title: "Booth Booked",
-        //       description: `Booth ${selectedBooth.boothNumber} has been booked successfully.`,
-        //     })
-
-        //   })
-        //   .then(() => {
-        //     toast({
-        //       variant: "default",
-        //       title: "Booth Booked",
-        //       description: `Booth ${selectedBooth.boothNumber} has been booked successfully.`,
-        //     });
-        //     setIsModalOpen(false); // Close the modal after saving
-        //     // Optionally, refresh the booth list
-        //     fetchBooths(selectedBooth.expoId);
-        //   })
         .catch((error) => {
           toast({
             variant: "destructive",
