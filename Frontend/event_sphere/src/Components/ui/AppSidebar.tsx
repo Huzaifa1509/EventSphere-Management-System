@@ -45,12 +45,6 @@ const attendeeItems = [
     }
 ]
 
-const organizerItems = [
-];
-
-const exhibitorItems = [ 
-];
-
 // Menu items.
 const adminItems = [
     {
@@ -88,18 +82,14 @@ export function AppSidebar() {
     let items = [];
     if (user.role === "ADMIN") {
         items = adminItems;
-    } else if (user.role === "ORGANIZER") {
-        items = organizerItems;
-    } else if (user.role === "EXHIBITOR") {
-        items = exhibitorItems;
-    }else{
-        items = attendeeItems;
+    } else {
+        items = adminItems;
     }
 
     const handleLogout = () => {
         console.log("Logging out...");
-        localStorage.removeItem('token'); 
-        localStorage.removeItem('user'); 
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
         navigate('/');
         window.location.reload(); // Force a page reload
     }

@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/Components/ui/Card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/Tabs'
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/Toaster"
 

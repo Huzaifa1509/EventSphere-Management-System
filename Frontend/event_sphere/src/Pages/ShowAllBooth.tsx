@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/Components/ui/Card"
 import { Grid } from "@/components/ui/grid"; // Optional if you have a Grid layout setup
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/Components/ui/Skeleton";
 
 // Define Booth type
 interface Booth {
