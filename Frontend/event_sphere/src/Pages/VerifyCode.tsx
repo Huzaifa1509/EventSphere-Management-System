@@ -11,36 +11,19 @@ import { useNavigate } from 'react-router-dom';
 import { Toaster } from '@/Components/ui/Toaster';
 import { ShieldCheck } from 'lucide-react';
 import axios from 'axios'
-// import { AsyncEncryptStorage } from 'encrypt-storage';
 
 const formSchema = z.object({
-    otp: z.string().min(1, "OTP is required"), // Validation for OTP input
+    otp: z.string().min(1, "OTP is required"),
 });
-
-// export const encryptStorage = new AsyncEncryptStorage(import.meta.env.VITE_SECRET_KEY, {
-//     localStorage: 'localStorage',
-// });
-
-// async function getDecryptedValue(): Promise<any | undefined> {
-//     const tmpUser = await encryptStorage.getItem('tmp_user');
-//     const otp = await encryptStorage.getItem('otp');
-
-//     if (!tmpUser || !otp) {
-//         return undefined;
-//     }
-
-//     return { tmpUser: JSON.parse(tmpUser), otp };
-// }
-
 const VerifyCode = () => {
-    const { otp } = useParams(); // Get OTP from URL params
-    const { toast } = useToast(); // Toast for notifications
-    const navigate = useNavigate(); // Navigate between routes
+    const { otp } = useParams();
+    const { toast } = useToast();
+    const navigate = useNavigate();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            otp: otp, // Default OTP value from params
+            otp: otp,
         },
     });
 
@@ -48,21 +31,6 @@ const VerifyCode = () => {
         console.log("Submitted Values: ", values);
 
         try {
-            // Decrypt the stored values
-            // const decryptedData = await getDecryptedValue();
-            // if (!decryptedData) {
-            //     toast({
-            //         variant: "destructive",
-            //         title: "Error",
-            //         description: "Session expired or data not found. Please try again.",
-            //     });
-            //     return;
-            // }
-
-            // const { tmpUser, otp: storedOtp } = decryptedData;
-
-            // console.log("Decrypted Data: ", decryptedData);
-            // Verify OTP
 
             const getOtp = localStorage.getItem('otp');
             const tmpUser = localStorage.getItem('tmp_user');
@@ -81,23 +49,15 @@ const VerifyCode = () => {
 
             const parsedTmpUser = JSON.parse(tmpUser || '');
 
-            // Post the user data to the backend API
+
             axios.post('/api/users', parsedTmpUser)
                 .then(async response => {
                     console.log("Response: ", response.data);
 
                     if (response.status === 201 && response.data.token) {
-                        // Remove old keys from local storage
-                        // await encryptStorage.removeItem('tmp_user');
-                        // await encryptStorage.removeItem('otp');
 
                         localStorage.removeItem('tmp_user');
                         localStorage.removeItem('otp');
-
-                        // Save new encrypted keys
-                        // await encryptStorage.setItem('token', response.data.token);
-                        // await encryptStorage.setItem('user', JSON.stringify(response.data.user));
-
                         localStorage.setItem('token', response.data.token);
                         localStorage.setItem('user', JSON.stringify(response.data.user));
 
@@ -107,7 +67,7 @@ const VerifyCode = () => {
                             description: "You have been registered successfully.",
                         });
 
-                        // Navigate to the dashboard
+
                         navigate('/dashboard');
                     }
                 })
@@ -141,7 +101,6 @@ const VerifyCode = () => {
                         onSubmit={form.handleSubmit(onSubmit)}
                         className="space-y-8 w-96 bg-slate-900 text-white p-5 rounded-2xl">
 
-                        {/* OTP Input Field */}
                         <FormField
                             control={form.control}
                             name="otp"
@@ -156,7 +115,7 @@ const VerifyCode = () => {
                             )}
                         />
 
-                        {/* Submit Button */}
+
                         <Button className="w-full bg-white text-black hover:bg-black hover:text-white" type="submit">
                             <ShieldCheck /> Register
                         </Button>

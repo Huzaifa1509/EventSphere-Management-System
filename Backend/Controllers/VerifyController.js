@@ -93,7 +93,8 @@ const passwordResetOTP = async (req, res) => {
             html: `<p>Hi,</p>
                    <p>Please use the following OTP to reset your password:</p>
                    <p>OTP: ${token}</p>
-                   <p><a href="http://localhost:5173/forget-password/${token}">Reset Password</a></p>
+                   <p><a href="http://localhost:5173/verify-otp/${token}">Reset Password</a></p>
+                   <p>OTP will expire in <b>15 minutes</b>.</p>
                    <p>If you did not request a password reset, please ignore this email.</p>`,
         };
 

@@ -5,6 +5,8 @@ import App from './App.jsx'
 import Login from './Pages/Login.tsx'
 import Register from './Pages/Register.tsx'
 import ForgetPassword from './Pages/ForgetPassword.tsx'
+import VerifyOTP from './Pages/VerifyOTP.tsx'
+import PasswordReset from './Pages/PasswordReset.tsx'
 import Dashboard from './Pages/Dashboard.tsx'
 import Exhibitor from './Pages/Exhibitor.tsx'
 import CreateExpoEvent from './Pages/CreateExpoEvent.tsx'
@@ -22,6 +24,7 @@ import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, N
 import ProtectedRoute from './ProtectedRoute.jsx'
 import AllRequests from './Pages/AllRequests.tsx'
 import Allexhibitors from './Pages/AllExhibitors.tsx'
+import _404 from './Error/_404.tsx'
 
 const value = localStorage.getItem('token');
 
@@ -32,15 +35,16 @@ const router = createBrowserRouter(
     <Route path="/" element={ value ? <Navigate to="/dashboard" replace /> : <App />}>
       <Route index element={<Login />} />
       <Route path="register" element={  <Register />} />
-      <Route path="forget-password/:token?" element={<ForgetPassword />} />
+      <Route path="forget-password" element={<ForgetPassword />} />
       <Route path="verify/:otp" element={<VerifyCode />} />
       <Route path="exhibitor" element={<Exhibitor />} />
       <Route path="expoevents" element={<CreateExpoEvent />} />
       <Route path="attendee" element={<Attendee />} />
-
- 
+      <Route path="verify-otp/:otp?" element={<VerifyOTP />} />
+      <Route path="reset-password" element={<PasswordReset />} />
     </Route>
-  
+
+    <Route path="*" element={<_404 />} />
 
     <Route path="/dashboard" element={<ProtectedRoute />}>
       <Route index element={<Dashboard />} />

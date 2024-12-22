@@ -19,7 +19,7 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from "@/components/ui/Dropdown-menu"
+} from "@/Components/ui/Dropdown-menu"
 
 
 const attendeeItems = [
