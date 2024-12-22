@@ -32,7 +32,7 @@ const router = createBrowserRouter(
     <Route path="/" element={ value ? <Navigate to="/dashboard" replace /> : <App />}>
       <Route index element={<Login />} />
       <Route path="register" element={  <Register />} />
-      <Route path="forget-password" element={<ForgetPassword />} />
+      <Route path="forget-password/:token?" element={<ForgetPassword />} />
       <Route path="verify/:otp" element={<VerifyCode />} />
       <Route path="exhibitor" element={<Exhibitor />} />
       <Route path="expoevents" element={<CreateExpoEvent />} />

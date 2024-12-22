@@ -182,4 +182,46 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { createUser, loginUser, getProfile, updateUser, getAllUsers, deleteUser };
+const forgetPassword = async (req, res) => {
+    const { email, password } = req.body;
+
+    console.table({ email, password });
+
+    if(!email){
+        console.log("Email Not Found:", email)
+        return res.status(400).json({ message: "Email is required" });
+    }
+
+    if(!password){
+        console.log("Password Not Found:", password)
+        return res.status(400).json({ message: "Password is required" });
+    }
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            console.log("User Not Found:", user)
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        console.log(user)
+
+        const salt = await bcryptjs.genSalt(10)
+
+        user.password = await bcryptjs.hash(password, salt)
+        await user.save()
+
+
+        console.log("Password Updated Successfully")
+
+        res.status(200).json({ message: "Password updated successfully" });
+    }
+    catch (error) {
+        console.log(error)
+        console.log(error?.message)
+        res.status(500).json({ message: error.message });
+    }
+
+}
+
+module.exports = { createUser, loginUser, getProfile, updateUser, getAllUsers, deleteUser, forgetPassword };
