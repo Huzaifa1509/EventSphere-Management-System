@@ -12,7 +12,7 @@ import axios from 'axios';
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from '@/Components/ui/Toaster';
 import { Calendar } from "@/Components/ui/Calendar";
-import { Progress } from "@/components/ui/progress";
+import { Progress } from "@/Components/ui/Progress";
 import {
     Popover,
     PopoverContent,
