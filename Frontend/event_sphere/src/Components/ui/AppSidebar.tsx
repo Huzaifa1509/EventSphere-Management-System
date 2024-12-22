@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { User, Home, CalendarDays, Calendar1, Store, User2, ChevronUp } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 
@@ -80,9 +80,11 @@ const adminItems = [
 ]
 
 export function AppSidebar() {
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    const userName = user.name;
 
     let items = [];
     if (user.role === "ATTENDEE") {
@@ -91,13 +93,15 @@ export function AppSidebar() {
         items = adminItems;
     }
 
-    const handleLogout = () => {
-        console.log("Logging out...");
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        navigate('/');
 
+    const handleLogout = async () => {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        if (!localStorage.getItem("user") && !localStorage.getItem("token")) {
+            navigate("/");
+        }
     }
+
 
     return (
         <Sidebar className="dark" side="left" variant="floating" collapsible="icon">
@@ -126,7 +130,7 @@ export function AppSidebar() {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <SidebarMenuButton className="text-white">
-                                    <User2 /> Username
+                                    <User2 /> <span>{userName}</span>
                                     <ChevronUp className="ml-auto" />
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>

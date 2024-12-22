@@ -7,7 +7,7 @@ const expoController = require('./Controllers/ExpoController'); // Import the Ex
 const exhibitorController = require('./Controllers/ExhibitorController'); 
 const AttendeeController = require('./Controllers/AttendeeController');
 const BoothController = require('./Controllers/BoothController');
-const {verifyOTP} = require('./Controllers/VerifyController')
+const {verifyOTP, passwordResetOTP} = require('./Controllers/VerifyController')
 const {uploadImageHandler} = require("./Middlewares/UploadImageHandler")
 const protect = require('./Middlewares/token_decode');
 const connectDB = require('./Configuration/db_config');
@@ -35,6 +35,8 @@ app.put('/api/users/:userId', userController.updateUser);
 
 // Verify routes
 app.post('/api/verify', verifyOTP);
+app.post('/api/password-reset-otp', passwordResetOTP);
+app.post('/api/reset-password', userController.forgetPassword);
 
 // Expo routes
 app.post('/api/expos', expoController.createExpo); ///to create an Expo
