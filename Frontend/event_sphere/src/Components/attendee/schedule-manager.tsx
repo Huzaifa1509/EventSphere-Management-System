@@ -1,19 +1,20 @@
-import React, { useState } from "react"
-import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/Components/ui/Card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/Tabs'
+import React, { useState } from "react";
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/Components/ui/Card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/Tabs';
 import { useToast } from "@/hooks/use-toast";
-import { Toaster } from "@/components/ui/Toaster"
+import { Toaster } from '@/Components/ui/Toaster';
+import { NotificationManager } from "./notification-manager";
 
 const schedule = [
-  { id: 1, title: 'Opening Keynote', time: '9:00 AM - 10:00 AM', date: '2023-10-01', day: 'Day 1' },
+  { id: 1, title: 'Opening Keynote', time: '5:20 AM - 10:00 AM', date: '2024-12-23', day: 'Day 1' },
   { id: 2, title: 'Panel Discussion: Future of AI', time: '11:00 AM - 12:00 PM', date: '2023-10-01', day: 'Day 1' },
   { id: 3, title: 'Workshop: Building Scalable Apps', time: '2:00 PM - 4:00 PM', date: '2023-10-02', day: 'Day 2' },
   { id: 4, title: 'Networking Event', time: '6:00 PM - 8:00 PM', date: '2023-10-02', day: 'Day 2' },
-]
+];
 
 export function ScheduleManager() {
-  const [bookmarkedSessions, setBookmarkedSessions] = useState<number[]>([])
+  const [bookmarkedSessions, setBookmarkedSessions] = useState<number[]>([]);
   const { toast } = useToast();
 
   const toggleBookmark = (sessionId: number) => {
@@ -21,24 +22,24 @@ export function ScheduleManager() {
       prev.includes(sessionId)
         ? prev.filter(id => id !== sessionId)
         : [...prev, sessionId]
-    )
+    );
 
-    const session = schedule.find(s => s.id === sessionId)
+    const session = schedule.find(s => s.id === sessionId);
     if (session) {
       toast({
         title: bookmarkedSessions.includes(sessionId) ? "Session Unbookmarked" : "Session Bookmarked",
         description: `${session.title} on ${session.date} at ${session.time}`,
-      })
+      });
     }
-  }
+  };
 
   const groupedSchedule = schedule.reduce((acc, session) => {
     if (!acc[session.day]) {
-      acc[session.day] = []
+      acc[session.day] = [];
     }
-    acc[session.day].push(session)
-    return acc
-  }, {})
+    acc[session.day].push(session);
+    return acc;
+  }, {} as Record<string, typeof schedule>);
 
   return (
     <>
@@ -54,7 +55,7 @@ export function ScheduleManager() {
                 <TabsTrigger key={day} value={day}>{day}</TabsTrigger>
               ))}
             </TabsList>
-            {Object.entries(groupedSchedule).map(([day, sessions]: [string, any[]]) => (
+            {Object.entries(groupedSchedule).map(([day, sessions]) => (
               <TabsContent key={day} value={day}>
                 {sessions.map(session => (
                   <div key={session.id} className="flex justify-between items-center mb-4 p-4 bg-secondary rounded-lg">
@@ -74,10 +75,10 @@ export function ScheduleManager() {
               </TabsContent>
             ))}
           </Tabs>
+          <NotificationManager bookmarkedSessions={bookmarkedSessions} schedule={schedule} />
         </CardContent>
       </Card>
       <Toaster />
     </>
-  )
+  );
 }
-

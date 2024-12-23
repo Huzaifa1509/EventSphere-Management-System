@@ -58,7 +58,7 @@ app.delete('/api/booths/:boothId', BoothController.deleteBooth);
 app.post('/api/register-for-expo/:expoId',protect, AttendeeController.registerForExpo);
 app.post('/api/register-for-session/:sessionId',protect, AttendeeController.registerForSession);
 app.put('/api/bookmark-session/:sessionId',protect, AttendeeController.bookmarkSession);
-app.post('/api/interact-with-exhibitor', protect, AttendeeController.interactWithExhibitor);
+// app.post('/api/interact-with-exhibitor', protect, AttendeeController.interactWithExhibitor);
 app.put('/api/update-notification-preferences', protect, AttendeeController.updateNotificationPreferences);
 app.get('/api/user-schedule', protect, AttendeeController.getUserSchedule);
 
