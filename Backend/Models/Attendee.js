@@ -89,10 +89,10 @@ const AttendeeSchema = new mongoose.Schema({
   },
 
   // Exhibitor Interactions
-  exhibitorInteractions: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'ExhibitorInteraction'
-  }],
+  // exhibitorInteractions: [{
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'ExhibitorInteraction'
+  // }],
 
   // Metadata
   createdAt: {
@@ -106,31 +106,31 @@ const AttendeeSchema = new mongoose.Schema({
 });
 
 // Exhibitor Interaction Schema
-const ExhibitorInteractionSchema = new mongoose.Schema({
-  attendee: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Attendee',
-    required: true
-  },
-  exhibitor: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Exhibitor',
-    required: true
-  },
-  interactionType: {
-    type: String,
-    enum: ['chat', 'email', 'booth'],
-    required: true
-  },
-  notes: {
-    type: String,
-    trim: true
-  },
-  timestamp: {
-    type: Date,
-    default: Date.now
-  }
-});
+// const ExhibitorInteractionSchema = new mongoose.Schema({
+//   attendee: {
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: 'Attendee',
+//     required: true
+//   },
+//   exhibitor: {
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: 'Exhibitor',
+//     required: true
+//   },
+//   interactionType: {
+//     type: String,
+//     enum: ['chat', 'email', 'booth'],
+//     required: true
+//   },
+//   notes: {
+//     type: String,
+//     trim: true
+//   },
+//   timestamp: {
+//     type: Date,
+//     default: Date.now
+//   }
+// });
 
 // Exhibitor Schema
 // const ExhibitorSchema = new mongoose.Schema({
@@ -159,14 +159,14 @@ const ExhibitorInteractionSchema = new mongoose.Schema({
 // });
 
 const Attendee = mongoose.model('Attendee', AttendeeSchema);
-const ExhibitorInteraction = mongoose.model('ExhibitorInteraction', ExhibitorInteractionSchema);
+// const ExhibitorInteraction = mongoose.model('ExhibitorInteraction', ExhibitorInteractionSchema);
 // const Exhibitor = mongoose.model('Exhibitor', ExhibitorSchema);
 const Session = mongoose.model('Session', SessionSchema);
 
 
 module.exports = {
   Attendee,
-  ExhibitorInteraction,
+  // ExhibitorInteraction,
   // Exhibitor,
   Session
 }

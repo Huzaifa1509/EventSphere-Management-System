@@ -1,7 +1,8 @@
 const Expo = require("../Models/Expo");
 const Booth = require("../Models/Booth");
 const User = require("../Models/User")
-const {Attendee, ExhibitorInteraction,
+const {Attendee, 
+  // ExhibitorInteraction,
   //  Exhibitor,
     Session}= require("../Models/Attendee");
 const mongoose = require("mongoose");
@@ -207,50 +208,50 @@ const bookmarkSession = async (req, res) => {
 };
 
 // Exhibitor Interaction
-const interactWithExhibitor = async (req, res) => {
-  try {
-    const { exhibitorId, interactionType, notes } = req.body;
-    const attendeeId = req.user.userId;
+// const interactWithExhibitor = async (req, res) => {
+//   try {
+//     const { exhibitorId, interactionType, notes } = req.body;
+//     const attendeeId = req.user.userId;
 
-    // Find exhibitor and attendee
-    // const exhibitor = await Exhibitor.findById(exhibitorId);
-    const attendee = await Attendee.findOne({AttendeeId: attendeeId});
+//     // Find exhibitor and attendee
+//     // const exhibitor = await Exhibitor.findById(exhibitorId);
+//     const attendee = await Attendee.findOne({AttendeeId: attendeeId});
 
-    // if (!exhibitor) {
-    //   return res.status(404).json({ message: "Exhibitor not found" });
-    // }
+//     // if (!exhibitor) {
+//     //   return res.status(404).json({ message: "Exhibitor not found" });
+//     // }
 
-    // Create interaction
-    const interaction = new ExhibitorInteraction({
-      attendee: attendeeId,
-      exhibitor: exhibitorId,
-      interactionType,
-      notes,
-    });
+//     // Create interaction
+//     // const interaction = new ExhibitorInteraction({
+//     //   attendee: attendeeId,
+//     //   exhibitor: exhibitorId,
+//     //   interactionType,
+//     //   notes,
+//     // });
 
-    await interaction.save();
+//     await interaction.save();
 
-    // Add to attendee and exhibitor interactions
-    attendee.exhibitorInteractions.push(exhibitorId);
-    // exhibitor.interactions.push(interaction._id); 
+//     // Add to attendee and exhibitor interactions
+//     // attendee.exhibitorInteractions.push(exhibitorId);
+//     // exhibitor.interactions.push(interaction._id); 
 
-    await attendee.save();
-    // await exhibitor.save();
+//     await attendee.save();
+//     // await exhibitor.save();
 
-    res.status(200).json({
-      message: "Exhibitor interaction recorded",
-      interaction: {
-        id: interaction._id,
-        // exhibitor: exhibitor.name,
-        type: interaction.interactionType,
-      },
-    });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Interaction failed", error: error.message });
-  }
-};
+//     res.status(200).json({
+//       message: "Exhibitor interaction recorded",
+//       interaction: {
+//         id: interaction._id,
+//         // exhibitor: exhibitor.name,
+//         type: interaction.interactionType,
+//       },
+//     });
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ message: "Interaction failed", error: error.message });
+//   }
+// };
 
 // Notification Preferences
 const updateNotificationPreferences = async (req, res) => {
@@ -339,7 +340,7 @@ const getUserSchedule = async (req, res) => {
 module.exports = {
   getUserSchedule,
   updateNotificationPreferences,
-  interactWithExhibitor,
+  // interactWithExhibitor,
   bookmarkSession,
   registerForExpo,
   registerForSession

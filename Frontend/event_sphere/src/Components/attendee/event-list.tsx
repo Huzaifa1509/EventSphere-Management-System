@@ -27,6 +27,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/Form";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 interface EventListProps {
   limit?: number;
@@ -49,11 +51,14 @@ const formSchema = z.object({
   name: z.string().nonempty('Name is required'),
   email: z.string().email('Invalid email address'),
 });
+
 export function EventList({ limit }: EventListProps) {
   const [expos, setExpos] = useState<ExpoEvents[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedEvent, setSelectedEvent] = useState<ExpoEvents | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const fetchExpos = async () => {
@@ -108,13 +113,41 @@ export function EventList({ limit }: EventListProps) {
     }
   };
 
+
+  const handleRegisterClick = async (event: ExpoEvents) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/'); // Redirect to login page if token is not present
+    } else {
+      try {
+        const decodedToken: any = jwtDecode(token);
+        const userId = decodedToken.userId;
+  
+        // Fetch user profile
+        const response = await axios.get('/api/users/profile', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+  
+        const userProfile = response.data;
+        formMethods.setValue('name', userProfile.name);
+        formMethods.setValue('email', userProfile.email);
+        setSelectedEvent(event);
+      } catch (error) {
+        console.error("Invalid token or error fetching user profile:", error);
+        navigate('/'); // Redirect to login page if token is invalid
+      }
+    }
+  };
+
   const displayedEvents = limit ? expos.slice(0, limit) : expos;
 
   return (
     <div className="pb-4">
       {loading ? (
         <div className="grid gap-4">
-          {Array.from({ length: 6 }).map((_, index) => (
+          {Array.from({ length: 10 }).map((_, index) => (
             <Card key={index} className="mb-4">
               <CardHeader>
                 <Skeleton className="h-6 w-3/4 mb-2" />
@@ -152,7 +185,7 @@ export function EventList({ limit }: EventListProps) {
             <CardFooter>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button onClick={() => setSelectedEvent(event)}>Register</Button>
+                  <Button onClick={() => handleRegisterClick(event)}>Register</Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>

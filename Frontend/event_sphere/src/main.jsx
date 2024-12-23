@@ -40,6 +40,8 @@ const router = createBrowserRouter(
       <Route path="exhibitor" element={<Exhibitor />} />
       <Route path="expoevents" element={<CreateExpoEvent />} />
       <Route path="attendee" element={<Attendee />} />
+      <Route path="attendee/events" element={<EventList />} />
+
       <Route path="verify-otp/:otp?" element={<VerifyOTP />} />
       <Route path="reset-password" element={<PasswordReset />} />
     </Route>
