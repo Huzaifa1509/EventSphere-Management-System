@@ -1,3 +1,4 @@
+const Company = require("../Models/Company");
 const Exhibitor = require("../Models/Exhibitor");
 const User = require("../Models/User");
 const mongoose = require("mongoose");
@@ -133,8 +134,8 @@ const ContactInfoExchange = async (req, res) => {
   try {
     const { userId,  } = req.user;
     const { ExhibitorId } = req.params;
-    const GetUser = await User.findById(userId)
-    const GetCompanyByExhibitor = await Exhibitor.findById(ExhibitorId)
+    const GetUser = await User.findById(userId);
+    const GetExhibitorsRequest = await Exhibitor.findById(ExhibitorId)
     .populate({
       path: 'expoId',
       model: 'Expo',
@@ -146,14 +147,25 @@ const ContactInfoExchange = async (req, res) => {
     .populate({
       path: 'userId',
       model: 'User',
+    })
+    .populate({
+      path: 'companyId',
+      model: 'Company',
     });
 
     const mailOptions = {
       from: '"Event Sphere" eventsphere@worldoftech.company', // Sender address
       to: GetUser.email, // Recipient
+      cc: GetExhibitorsRequest.companyId.companyEmail,
       subject: 'Requested Contact Info Recieved!',
       html: `<p>Hi ${GetUser.name},</p>
-      <p>Company Name: ${GetCompanyByExhibitor.companyName}</p>`
+      <p>Company Name: ${GetCompanyByExhibitor.companyName}</p>
+      <p>Company Description: ${GetCompanyByExhibitor.companyDescription}</p>
+      <p>Company Email: ${GetCompanyByExhibitor.companyEmail}</p>
+      <p>Company Contact: ${GetCompanyByExhibitor.companyContact}</p>
+      <p>Company Service: ${GetCompanyByExhibitor.companyService}</p>
+      <p>Company Address: ${GetCompanyByExhibitor.companyAddress}</p>`
+
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
