@@ -73,8 +73,26 @@ const adminItems = [
         icon: Store,
     },
     {
-        title: "Exhibitor",
-        url: "exhibitor",
+        title: "Exhibitor Requests",
+        url: "/dashboard/requests",
+        icon: User,
+    },
+]
+
+const exhibitorItems = [
+    {
+        title: "Register Company",
+        url: "/dashboard/register-company",
+        icon: Home,
+    },
+    {
+        title: "Book Booths For Company",
+        url: "/dashboard/exhibitor",
+        icon: Calendar1,
+    },
+    {
+        title: "All Exhibitors",
+        url: "/dashboard/exhibitors",
         icon: User,
     },
 ]
@@ -89,7 +107,11 @@ export function AppSidebar() {
     let items = [];
     if (user.role === "ATTENDEE") {
         items = attendeeItems;
-    } else {
+    }
+    else if(user.role === "EXHIBITOR") {
+        items = exhibitorItems;
+    }
+         else {
         items = adminItems;
     }
 

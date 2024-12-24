@@ -37,15 +37,15 @@ const Exhibitor = () => {
 
   useEffect(() => {
 
-    if (!companyId) {
-      toast({
-          variant: "destructive",
-          title: "Error",
-          description: "No company found. Please register your company first.",
-      });
+    // if (!companyId) {
+    //   toast({
+    //       variant: "destructive",
+    //       title: "Error",
+    //       description: "No company found. Please register your company first.",
+    //   });
 
-      navigate('/dashboard/register-company', { replace: true });
-    }
+    //   navigate('/dashboard/register-company', { replace: true });
+    // }
 
     const fetchExpos = async () => {
       try {
