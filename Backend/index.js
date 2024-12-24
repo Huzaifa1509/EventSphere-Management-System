@@ -7,6 +7,7 @@ const expoController = require('./Controllers/ExpoController'); // Import the Ex
 const exhibitorController = require('./Controllers/ExhibitorController'); 
 const AttendeeController = require('./Controllers/AttendeeController');
 const BoothController = require('./Controllers/BoothController');
+const CompanyController = require('./Controllers/CompanyController');
 const {verifyOTP, passwordResetOTP} = require('./Controllers/VerifyController')
 const {uploadImageHandler} = require("./Middlewares/UploadImageHandler")
 const protect = require('./Middlewares/token_decode');
@@ -62,14 +63,16 @@ app.put('/api/bookmark-session/:sessionId',protect, AttendeeController.bookmarkS
 app.put('/api/update-notification-preferences', protect, AttendeeController.updateNotificationPreferences);
 app.get('/api/user-schedule', protect, AttendeeController.getUserSchedule);
 
-
+//Company routes
+app.post('/api/register-company', protect, upload.single('requireDocument') , CompanyController.createCompany);
+app.get('/api/get-company-name/:companyId', protect, CompanyController.getCompanyById);
+app.get('/api/get-companies-by-exhibitor', protect, CompanyController.GetCompanyByExhibitor);
 // Exhibitor routes
-app.post('/api/exhibitor', protect, upload.single('requireDocument') , exhibitorController.createExhibitor); ///to create an Expo
-app.get('/api/exhibitor', protect, exhibitorController.getAllExhibitorsCompany); //to get all Expos
+app.post('/api/exhibitor', protect, exhibitorController.createExhibitor); 
+app.get('/api/exhibitor', protect, exhibitorController.getAllExhibitorsCompany); 
 app.put('/api/exhibitor/:ExhibitorId', protect, exhibitorController.ExhibitorIsAccepted);
 app.get('/api/exhibitor/contact-info-exchange/:ExhibitorId', protect, exhibitorController.ContactInfoExchange);
-// app.get('/api/exhibitor/:exhibitorId', expoController.getExpoById); /// to get a specific Expo by ID
-// app.delete('/api/exhibitor/:exhibitorId', expoController.deleteExpo); //to delete an Expo
+
 
 // Start the server
 const PORT = process.env.PORT || 5000;

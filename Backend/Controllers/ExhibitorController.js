@@ -1,6 +1,5 @@
 const Exhibitor = require("../Models/Exhibitor");
 const User = require("../Models/User");
-const Booth = require("../Models/Booth");
 const mongoose = require("mongoose");
 const nodemailer = require('nodemailer');
 
@@ -17,38 +16,29 @@ const transporter = nodemailer.createTransport({
 
 const createExhibitor = async (req, res) => {
   const { userId } = req.user;
-  const { companyName, companyDescription, productName, productDescription, services, expoId, boothId } = req.body;
+  const { productName, productDescription, expoId, boothId, companyId } = req.body;
+  console.log(req.body);
   // Check required fields
-  if (!companyName || companyName.trim() === '') {
-    return res.status(400).json({ message: "Company name is required" });
-  }
+
   if (!productName || productName.trim() === '') {
     return res.status(400).json({ message: "Product name is required" });
   }
-  if (!services || services.trim() === '') {
-    return res.status(400).json({ message: "Service is required" });
-  }
 
   try {
-    // Retrieve uploaded file URL from Cloudinary
-    let requireDocumentUrl = null;
-    if (req.file) {
-      requireDocumentUrl = req.file.path; // Uploaded file URL
-    } else {
-      return res.status(400).json({ message: "Require Document (file) is missing" });
+
+    const RequestExists = await Exhibitor.findOne({ companyId, expoId });
+    if (RequestExists) {
+      return res.status(400).json({ message: "This Company had Already Request For Booths In This Expo!" });
     }
 
     //Create the Exhibitor Company/Org
     const newExhibitor = await Exhibitor.create({
-      companyName,
-      companyDescription,
       productName,
       productDescription,
-      services,
-      requireDocument: requireDocumentUrl,
       expoId,
       boothId,
-      userId
+      userId,
+      companyId
     });
 
     await newExhibitor.save();
@@ -67,8 +57,9 @@ const createExhibitor = async (req, res) => {
 };
 
 const getAllExhibitorsCompany = async (req, res) => {
+  const { isAccepted } = req.query;
   try {
-    const ExhibitorsCompany = await Exhibitor.find()
+    const ExhibitorsCompany = await Exhibitor.find({ isAccepted: Boolean(isAccepted) })
       .populate({
         path: 'expoId',
         model: 'Expo',
@@ -80,8 +71,29 @@ const getAllExhibitorsCompany = async (req, res) => {
       .populate({
         path: 'userId',
         model: 'User',
+      })
+      .populate({
+        path: 'companyId',
+        model: 'Company',
       });
-    return res.status(200).json(ExhibitorsCompany);
+
+    const boothIdCounts = {};
+    ExhibitorsCompany.forEach((exhibitor) => {
+      const boothId = exhibitor.boothId?._id?.toString();
+      if (boothId) {
+        boothIdCounts[boothId] = (boothIdCounts[boothId] || 0) + 1;
+      }
+    });
+
+    const result = ExhibitorsCompany.map((exhibitor) => {
+      const boothId = exhibitor.boothId?._id?.toString();
+      return {
+        ...exhibitor.toObject(),
+        requestByAnotherCompany: boothId && boothIdCounts[boothId] > 1,
+      };
+    });
+      
+    return res.status(200).json(result);
   } catch (error) {
     console.error("Error fetching expos:", error);
     return res.status(500).json({ message: "An error occurred while fetching expos", error: error.message });
@@ -95,9 +107,13 @@ const ExhibitorIsAccepted = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(ExhibitorId)) {
     return res.status(400).json({ message: "Invalid Exhibior ID" });
   }
-
+ 
   try {
     const AcceptExhibitor = await Exhibitor.findById(ExhibitorId);
+    const booths = await Booth.findById(AcceptExhibitor.boothId);
+    if(booths.count >= 1){
+      return res.status(400).json({ message: "Booth is already Booked" });
+    }
     if (!AcceptExhibitor) {
       return res.status(404).json({ message: "Exhibior not found" });
     }
@@ -202,7 +218,7 @@ module.exports = {
   createExhibitor,
   getAllExhibitorsCompany,
   ExhibitorIsAccepted,
-  ContactInfoExchange
+  ContactInfoExchange,
   //   getExpoById,
   //   deleteExpo
 };

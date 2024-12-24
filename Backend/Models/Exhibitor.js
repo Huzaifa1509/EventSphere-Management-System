@@ -1,28 +1,11 @@
 const mongoose = require('mongoose');
 
 const exhibitorSchema = new mongoose.Schema({
-    companyName: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    companyDescription: {
-        type: String,
-        maxLength: 500,
-    },
     productName: {
         type: String,
         required: true,
     },
     productDescription: {
-        type: String,
-        required: true,
-    },
-    services: {
-        type: String,
-        required: true,
-    },
-    requireDocument: {
         type: String,
         required: true,
     },
@@ -45,6 +28,11 @@ const exhibitorSchema = new mongoose.Schema({
         ref: "Booths", 
         required: true 
      },
+    companyId:{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: "Company", 
+        required: true
+    },
     createdAt: {
         type: Date,
         default: Date.now,

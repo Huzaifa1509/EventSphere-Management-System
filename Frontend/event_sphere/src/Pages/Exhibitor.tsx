@@ -13,17 +13,13 @@ import { useToast } from "@/hooks/use-toast"
 import { Toaster } from '@/Components/ui/Toaster';
 import { Textarea } from "@/Components/ui/Textarea"
 import Modal from "react-modal";
+import { useLocation } from 'react-router-dom';
 
 const formSchema = z.object({
-  companyName: z.string().min(5).max(50),
-  companyDescription: z.string().max(500).toLowerCase().optional(),
   productName: z.string().min(2).max(50),
   productDescription: z.string().max(500).toLowerCase(),
-  services: z.string().max(50),
   expoId: z.string(),
-  requireDocument: z
-    .instanceof(File, { message: "A valid file is required." })
-    .or(z.any()),
+  companyId: z.string(),
 })
 
 
@@ -31,15 +27,29 @@ const Exhibitor = () => {
   const { toast } = useToast()
   const navigate = useNavigate()
   const [expos, setExpos] = useState([]);
+  const [companies, setCompanies] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [booths, setBooths] = useState([]);
   const [selectedBooth, setSelectedBooth] = useState(null);
   const token = localStorage.getItem("token");
+  const location = useLocation();
+  const companyId = location.state?.companyId;
 
   useEffect(() => {
+
+    if (!companyId) {
+      toast({
+          variant: "destructive",
+          title: "Error",
+          description: "No company found. Please register your company first.",
+      });
+
+      navigate('/dashboard/register-company', { replace: true });
+    }
+
     const fetchExpos = async () => {
       try {
-        const response = await axios.get("/api/expos");
+        const response = await axios.get("/api/expos",{ headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } });
         console.log(response)
         setExpos(response.data);
       } catch (error) {
@@ -52,21 +62,30 @@ const Exhibitor = () => {
       }
     };
 
+    const fetchCompanies = async () => {
+      try {
+        const response = await axios.get("/api/get-companies-by-exhibitor", {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        setCompanies(response.data);
+      } catch (error) {
+        console.error("Error fetching companies:", error);
+      }
+    };
+
+    fetchCompanies();
     fetchExpos();
   }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      companyName: "",
-      companyDescription: "",
       productName: "",
       productDescription: "",
-      services: "",
       expoId: "",
-      requireDocument: z
-        .instanceof(File, { message: "A valid file is required." })
-        .or(z.any()),
+      companyId: "",
     },
   })
 
@@ -85,11 +104,8 @@ const Exhibitor = () => {
 
 
   async function onBoothSubmit() {
-
     try {
-      console.log(form.getValues());
-      // const { requireDocument, ...values } = form.getValues();
-
+        console.log(form.getValues())
       if (!selectedBooth) {
         toast({
           variant: "destructive",
@@ -98,44 +114,26 @@ const Exhibitor = () => {
         });
         return;
       }
-
-      console.log(selectedBooth)
-
       // Step 1: Post the exhibitor data
       axios
         .post('/api/exhibitor', {
           ...form.getValues(),
-          boothId: selectedBooth._id
+          boothId: selectedBooth._id,
         }, {
           headers: {
-            'Content-Type': 'multipart/form-data',
             'Authorization': `Bearer ${token}`
           },
         })
         .then((response) => {
           console.log(response);
-          toast({
-            variant: "default",
-            title: "Exhibitor Saved",
-            description: "Exhibitor data saved successfully.",
-          })
-
-          // Step 2: Update the booth's booking status
-          return axios.put(
-            `/api/boothBooked/${selectedBooth._id}`,
-            { isBooked: true },
-            { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } }
-          )
-            .then((response) => {
-              console.log(response);
-              toast({
-                variant: "default",
-                title: "Booth Booked",
-                description: `Booth ${selectedBooth.boothNumber} has been booked successfully.`,
-              });
-              setIsModalOpen(false);
-              fetchBooths(selectedBooth.expoId);
+            toast({
+              variant: "default",
+              title: "Your booth request has been submitted",
+              description: "Wait for admin approval.",
             })
+            setIsModalOpen(false);
+            fetchBooths(selectedBooth.expoId);
+
         })
         .catch((error) => {
           toast({
@@ -159,6 +157,14 @@ const Exhibitor = () => {
 
 
   const onSubmit = async (values) => {
+    if(!form.getValues().expoId){
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please select an Expo.",
+      });
+      return;
+    }
     await fetchBooths(values.expoId);
     setIsModalOpen(true);
   };
@@ -167,16 +173,45 @@ const Exhibitor = () => {
   return (
     <>
 
-      <div className="container flex flex-col justify-center items-center mx-auto px-4 ">
-        <h1 className="text-2xl font-semibold mb-6 text-center">Create Exhibitor</h1>
+      <div className="container flex flex-col justify-center items-center mx-auto px-4 mt-12">
+        <h1 className="text-2xl font-semibold mb-3 text-center">Register For Booths</h1>
+        <p className='capitalize font-semibold'>You've successfully registered your company! Next, select an expo to showcase your products and book a booth by clicking 'Get Booths'.</p>
+        <p className='capitalize font-semibold mb-3'>Remember, you must wait for admin approval for your selected booth. Once approved, you'll receive an email at your company email address, and your company card will appear in the listings.</p>
         <Form {...form}>
           <form
             method="post"
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-8 w-full bg-slate-900 text-white p-12 rounded-xl"
-            encType="multipart/form-data"
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+             {/* Company Field */}
+            <FormField
+              control={form.control}
+              name="companyId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Your Company</FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={(value) => field.onChange(value)} // Handle change
+                      value={companyId || field.value} // Select company by default
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your company" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {companies.map((company) => (
+                          <SelectItem key={company._id} value={company._id}>
+                            {company.companyName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
               {/* Expo Field */}
               <FormField
                 control={form.control}
@@ -200,44 +235,6 @@ const Exhibitor = () => {
                           ))}
                         </SelectContent>
                       </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Company Name Field */}
-              <FormField
-                control={form.control}
-                name="companyName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Company Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="IBEX ...."
-                        {...field}
-                        className="w-full"
-                        type="text"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Company Description Field */}
-              <FormField
-                control={form.control}
-                name="companyDescription"
-                render={({ field }) => (
-                  <FormItem className="col-span-full">
-                    <FormLabel>Company Description</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Enter Description Here....."
-                        {...field}
-                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -276,115 +273,6 @@ const Exhibitor = () => {
                   </FormItem>
                 )}
               />
-
-              {/* Services Field */}
-              <FormField
-                control={form.control}
-                name="services"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Company/Org Services</FormLabel>
-                    <Select onValueChange={field.onChange}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a Service" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="WEB_DEVELOPMENT">Web Development</SelectItem>
-                        <SelectItem value="MOBILE_APP_DEVELOPMENT">
-                          Mobile App Development
-                        </SelectItem>
-                        <SelectItem value="UI_UX_DESIGN">UI/UX Design</SelectItem>
-                        <SelectItem value="DIGITAL_MARKETING">
-                          Digital Marketing
-                        </SelectItem>
-                        <SelectItem value="SEO">
-                          Search Engine Optimization (SEO)
-                        </SelectItem>
-                        <SelectContent>
-                          <SelectItem value="WEB_DEVELOPMENT">Web Development</SelectItem>
-                          <SelectItem value="MOBILE_APP_DEVELOPMENT">Mobile App Development</SelectItem>
-                          <SelectItem value="UI_UX_DESIGN">UI/UX Design</SelectItem>
-                          <SelectItem value="DIGITAL_MARKETING">Digital Marketing</SelectItem>
-                          <SelectItem value="SEO">Search Engine Optimization (SEO)</SelectItem>
-                          <SelectItem value="CLOUD_SERVICES">Cloud Services</SelectItem>
-                          <SelectItem value="IT_CONSULTING">IT Consulting</SelectItem>
-                          <SelectItem value="DATA_ANALYTICS">Data Analytics</SelectItem>
-                          <SelectItem value="CYBERSECURITY">Cybersecurity</SelectItem>
-                          <SelectItem value="E_COMMERCE_SOLUTIONS">E-Commerce Solutions</SelectItem>
-                          <SelectItem value="SOFTWARE_DEVELOPMENT">Software Development</SelectItem>
-                          <SelectItem value="GRAPHIC_DESIGN">Graphic Design</SelectItem>
-                          <SelectItem value="CONTENT_CREATION">Content Creation</SelectItem>
-                          <SelectItem value="VIDEO_PRODUCTION">Video Production</SelectItem>
-                          <SelectItem value="BRAND_STRATEGY">Brand Strategy</SelectItem>
-                          <SelectItem value="SOCIAL_MEDIA_MANAGEMENT">Social Media Management</SelectItem>
-                          <SelectItem value="PAYMENT_INTEGRATION">Payment Integration</SelectItem>
-                          <SelectItem value="CUSTOMER_SUPPORT_SERVICES">Customer Support Services</SelectItem>
-                          <SelectItem value="DATABASE_MANAGEMENT">Database Management</SelectItem>
-                          <SelectItem value="NETWORK_INFRASTRUCTURE">Network Infrastructure</SelectItem>
-                          <SelectItem value="HARDWARE_SUPPORT">Hardware Support</SelectItem>
-                          <SelectItem value="PRODUCT_DESIGN">Product Design</SelectItem>
-                          <SelectItem value="VIRTUAL_ASSISTANCE">Virtual Assistance</SelectItem>
-                          <SelectItem value="EVENT_MANAGEMENT">Event Management</SelectItem>
-                          <SelectItem value="PROJECT_MANAGEMENT">Project Management</SelectItem>
-                          <SelectItem value="HR_SERVICES">HR Services</SelectItem>
-                          <SelectItem value="LEGAL_SERVICES">Legal Services</SelectItem>
-                          <SelectItem value="TRANSLATION_SERVICES">Translation Services</SelectItem>
-                          <SelectItem value="LOGISTICS_AND_SHIPPING">Logistics and Shipping</SelectItem>
-                          <SelectItem value="TRAINING_AND_DEVELOPMENT">Training and Development</SelectItem>
-                          <SelectItem value="SALES_AND_MARKETING">Sales and Marketing</SelectItem>
-                          <SelectItem value="PUBLIC_RELATIONS">Public Relations</SelectItem>
-                          <SelectItem value="TECHNICAL_SUPPORT">Technical Support</SelectItem>
-                          <SelectItem value="BLOCKCHAIN_DEVELOPMENT">Blockchain Development</SelectItem>
-                          <SelectItem value="ARTIFICIAL_INTELLIGENCE">Artificial Intelligence</SelectItem>
-                          <SelectItem value="MACHINE_LEARNING">Machine Learning</SelectItem>
-                          <SelectItem value="AR_VR_DEVELOPMENT">AR/VR Development</SelectItem>
-                          <SelectItem value="GAME_DEVELOPMENT">Game Development</SelectItem>
-                          <SelectItem value="FINANCIAL_SERVICES">Financial Services</SelectItem>
-                          <SelectItem value="TAX_ACCOUNTING">Tax & Accounting</SelectItem>
-                          <SelectItem value="INSURANCE_SERVICES">Insurance Services</SelectItem>
-                          <SelectItem value="REAL_ESTATE_SERVICES">Real Estate Services</SelectItem>
-                          <SelectItem value="RESEARCH_AND_DEVELOPMENT">Research and Development</SelectItem>
-                          <SelectItem value="HEALTHCARE_SERVICES">Healthcare Services</SelectItem>
-                          <SelectItem value="EDUCATIONAL_SERVICES">Educational Services</SelectItem>
-                          <SelectItem value="TRAVEL_AND_TOURISM">Travel and Tourism</SelectItem>
-                          <SelectItem value="HOSPITALITY_SERVICES">Hospitality Services</SelectItem>
-                          <SelectItem value="RETAIL_SERVICES">Retail Services</SelectItem>
-                          <SelectItem value="SUSTAINABILITY_SERVICES">Sustainability Services</SelectItem>
-
-                        </SelectContent>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Require Document Field */}
-              <FormField
-                control={form.control}
-                name="requireDocument"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Official Document</FormLabel>
-                    <FormControl>
-                      <Input className='bg-white text-black hover:cursor-pointer'
-                        placeholder="Please Insert Your Document"
-                        type="file"
-                        onChange={(e) => {
-                          // Use the `field.onChange` to handle the file manually
-                          if (e.target.files && e.target.files[0]) {
-                            field.onChange(e.target.files[0]); // Update the value with the selected file
-                          }
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
 
             <div className="flex justify-end">
               <Button

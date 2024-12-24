@@ -25,6 +25,7 @@ import ProtectedRoute from './ProtectedRoute.jsx'
 import AllRequests from './Pages/AllRequests.tsx'
 import Allexhibitors from './Pages/AllExhibitors.tsx'
 import _404 from './Error/_404.tsx'
+import RegisterCompany from './Pages/RegisterCompany.tsx'
 
 const value = localStorage.getItem('token');
 
@@ -58,7 +59,8 @@ const router = createBrowserRouter(
       <Route path="exhibitor" element={<Exhibitor />} />
       <Route path="requests" element={<AllRequests/>} />
       <Route path="exhibitors" element={<Allexhibitors/>} />
-
+      <Route path="register-company" element={<RegisterCompany />} />
+      
       <Route path="attendee" element={<LayoutAttendee />}>
       <Route index element={<Attendee />} />
       <Route path="events" element={<EventList />} />

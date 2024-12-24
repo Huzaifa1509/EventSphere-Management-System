@@ -13,7 +13,13 @@ const AllExhibitors = () => {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await axios.get('/api/exhibitor', { headers: { 'Content-Type': 'application/json','Authorization': `Bearer ${token}` } });
+        const response = await axios.get('/api/exhibitor', {
+          params: { isAccepted: true },
+          headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}` 
+          }
+      });
         setRequests(response.data);
       } catch (error) {
         console.error('Error fetching requests:', error);
@@ -49,17 +55,17 @@ const AllExhibitors = () => {
   return (
     <>
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">All Exhibitors Company</h1>
+      <h1 className="text-2xl font-bold mb-4">All Companies Registered For Expos</h1>
       <div className="space-y-4grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {requests.map((request) => (
           <div key={request.id} className="flex justify-center">
             <Card className="w-full max-w-md bg-slate-800 text-white">
               <CardHeader>
-                <CardTitle className="text-xl">{request.companyName}</CardTitle>
+                <CardTitle className="text-xl">{request.companyId.companyName}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm mt-2">
-                    <strong>Company Description:</strong>  {request.companyDescription}</p>
+                    <strong>Company Description:</strong>  {request.companyId.companyDescription}</p>
                 <p className="text-sm mt-2">
                   <strong>Occupied Booth No:</strong> {request.boothId.boothNumber}
                 </p>
