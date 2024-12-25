@@ -91,7 +91,7 @@ const updateCompanyById = async (req, res) => {
 // Delete a company by ID
 const deleteCompanyById = async (req, res) => {
     try {
-        const company = await Company.findByIdAndDelete(req.params.id);
+        const company = await Company.findByIdAndDelete(req.params.companyId);
         if (!company) {
             return res.status(404).send();
         }
