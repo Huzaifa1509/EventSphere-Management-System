@@ -40,7 +40,11 @@ const ShowAllCompanies: React.FC = () => {
     const confirmDelete = window.confirm("Are you sure you want to delete this company?");
     if (confirmDelete) {
       try {
-        await axios.delete(`/api/delete-company/${companyId}`);
+        await axios.delete(`/api/delete-company/${companyId}`,
+            {
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+            }
+        );
         setCompanies(Companies.filter((company) => company._id !== companyId));
         toast({
           variant: "default",
