@@ -78,7 +78,7 @@ const GetCompanyByExhibitor = async (req, res) => {
 // Update a company by ID
 const updateCompanyById = async (req, res) => {
     try {
-        const company = await Company.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        const company = await Company.findByIdAndUpdate(req.params.companyId, req.body, { new: true, runValidators: true });
         if (!company) {
             return res.status(404).send();
         }

@@ -29,6 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 // User routes
 app.post('/api/users', userController.createUser);
 app.get('/api/allusers', userController.getAllUsers);
+app.get('/api/user_count', userController.getUserCount);
 app.delete('/api/users/:userId', userController.deleteUser);
 app.post('/api/users/login', userController.loginUser);
 app.get('/api/users/profile', protect, userController.getProfile);
