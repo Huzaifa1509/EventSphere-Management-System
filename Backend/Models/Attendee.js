@@ -2,36 +2,6 @@ const mongoose = require("mongoose");
 
 
 // Session Schema
-const SessionSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  description: {
-    type: String,
-    trim: true
-  },
-  startTime: {
-    type: Date,
-    required: true
-  },
-  endTime: {
-    type: Date,
-    required: true
-  },
-  floor: {
-    type: String,
-    trim: true
-  },
-  capacity: {
-    type: Number
-  },
-  expo: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Expo'
-  }
-});
 
 // Attendee Schema
 const AttendeeSchema = new mongoose.Schema({
@@ -161,12 +131,10 @@ const AttendeeSchema = new mongoose.Schema({
 const Attendee = mongoose.model('Attendee', AttendeeSchema);
 // const ExhibitorInteraction = mongoose.model('ExhibitorInteraction', ExhibitorInteractionSchema);
 // const Exhibitor = mongoose.model('Exhibitor', ExhibitorSchema);
-const Session = mongoose.model('Session', SessionSchema);
 
 
 module.exports = {
   Attendee,
   // ExhibitorInteraction,
   // Exhibitor,
-  Session
 }

@@ -4,7 +4,8 @@ const User = require("../Models/User")
 const {Attendee, 
   // ExhibitorInteraction,
   //  Exhibitor,
-    Session}= require("../Models/Attendee");
+   }= require("../Models/Attendee");
+const Session  = require("../Models/Session");
 const mongoose = require("mongoose");
 
 const jwt = require("jsonwebtoken");
@@ -92,6 +93,7 @@ const registerForSession = async (req, res) => {
     // Validate inputs
     if (!sessionId || !userId) {
       return res.status(400).json({ 
+        success: false,
         message: !sessionId ? "Session ID is required" : "User ID is missing" 
       });
     }
@@ -99,18 +101,28 @@ const registerForSession = async (req, res) => {
     // Find session and attendee in parallel
     const [session, attendee] = await Promise.all([
       Session.findById(sessionId).populate({
-        path: "Expo",
+        path: "expo",
         strictPopulate: false,
       }),
-      Attendee.findOne({AttendeeId: userId}),
+      User.findOne({ _id: userId, role: "ATTENDEE" }),
     ]);
 
     if (!session) {
-      return res.status(404).json({ message: "Session not found" });
+      return res.status(404).json({ success: false, message: "Session not found" });
     }
 
     if (!attendee) {
-      return res.status(404).json({ message: "Attendee not found" });
+      return res.status(404).json({ success: false, message: "Attendee not found" });
+    }
+
+    // Check if attendee exists and is already registered for the session
+    const specificAttendee = await Attendee.findOne({ AttendeeId: userId });
+
+    if (specificAttendee?.sessionsRegistered.includes(sessionId)) {
+      return res.status(409).json({ 
+        success: false, 
+        message: "You have already registered for this session" 
+      });
     }
 
     const registeredAttendeesCount = await Attendee.countDocuments({
@@ -119,22 +131,31 @@ const registerForSession = async (req, res) => {
 
     // Check session capacity
     if (registeredAttendeesCount >= session.capacity) {
-      return res.status(400).json({ message: "Session is full" });
+      return res.status(400).json({ success: false, message: "Session is full" });
     }
 
-    // Check if already registered
-    if (attendee.sessionsRegistered.includes(sessionId)) {
-      return res.status(409).json({ message: "Already registered for this session" });
+    // Register the attendee
+    let attendeeResponse;
+    if (specificAttendee) {
+      // Add the sessionId to existing attendee
+      specificAttendee.sessionsRegistered.push(sessionId);
+      attendeeResponse = await specificAttendee.save();
+    } else {
+      // Create a new attendee record
+      attendeeResponse = await Attendee.create({
+        AttendeeId: attendee._id,
+        name: attendee.name,
+        email: attendee.email,
+        phoneNumber: attendee.phoneNumber,
+        organization: attendee.organization,
+        sessionsRegistered: [sessionId],
+      });
     }
-
-    // Register attendee for the session
-    attendee.sessionsRegistered.push(sessionId);
-
-    // Save both documents in parallel
-    await Promise.all([attendee.save(), session.save()]);
 
     return res.status(200).json({
+      success: true,
       message: "Successfully registered for session",
+      attendee: attendeeResponse,
       session: {
         id: session._id,
         name: session.name,
@@ -145,6 +166,7 @@ const registerForSession = async (req, res) => {
     // Handle specific errors
     const statusCode = error.name === "CastError" ? 400 : 500;
     return res.status(statusCode).json({
+      success: false,
       message: statusCode === 400 ? "Invalid Session ID" : "Session registration failed",
       error: error.message,
     });
@@ -202,6 +224,50 @@ const bookmarkSession = async (req, res) => {
     const statusCode = error.name === "CastError" ? 400 : 500;
     return res.status(statusCode).json({
       message: statusCode === 400 ? "Invalid Session ID" : "Bookmarking failed",
+      error: error.message,
+    });
+  }
+};
+
+
+const getAllSessions = async (req, res) => {
+  try {
+    const { userId } = req.user;
+    const attendee = await Attendee.findOne({ AttendeeId: userId });
+
+    const sessions = await Session.find({ expo: { $nin: attendee.exposRegistered } }).populate('expo');    
+
+    res.status(200).json(sessions);
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to retrieve sessions",
+      error: error.message,
+    });
+  }
+};
+
+const getRegisteredExpoSessions = async (req, res) => {
+  try {
+    const { userId } = req.user; // Extract attendee ID from req.user
+
+    // Step 1: Find the attendee
+    const attendee = await Attendee.findOne({ AttendeeId: userId });
+    console.log(attendee.exposRegistered)
+    // Step 2: Handle case where attendee is not found
+    if (!attendee) {
+      return res.status(404).json({ message: 'Attendee not found' });
+    }
+
+    // Step 3: Find sessions for the registered expos
+    const sessions = await Session.find({ expo: { $in: attendee.exposRegistered } }).populate('expo');
+console.log(sessions)
+    // Step 4: Return the sessions
+    res.status(200).json(sessions);
+  } catch (error) {
+    // Step 5: Handle errors gracefully
+    console.error('Error retrieving sessions:', error);
+    res.status(500).json({
+      message: 'Failed to retrieve sessions for registered expos',
       error: error.message,
     });
   }
@@ -343,7 +409,9 @@ module.exports = {
   // interactWithExhibitor,
   bookmarkSession,
   registerForExpo,
-  registerForSession
+  registerForSession,
+  getAllSessions,
+  getRegisteredExpoSessions
 };
 
 

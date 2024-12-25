@@ -62,6 +62,8 @@ app.put('/api/bookmark-session/:sessionId',protect, AttendeeController.bookmarkS
 // app.post('/api/interact-with-exhibitor', protect, AttendeeController.interactWithExhibitor);
 app.put('/api/update-notification-preferences', protect, AttendeeController.updateNotificationPreferences);
 app.get('/api/user-schedule', protect, AttendeeController.getUserSchedule);
+app.get('/api/get-all-sessions', protect, AttendeeController.getAllSessions);
+app.get('/api/get-registered-expo-sessions', protect, AttendeeController.getRegisteredExpoSessions);
 
 //Company routes
 app.post('/api/register-company', protect, upload.single('requireDocument') , CompanyController.createCompany);
