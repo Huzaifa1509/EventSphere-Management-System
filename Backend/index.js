@@ -65,8 +65,10 @@ app.get('/api/user-schedule', protect, AttendeeController.getUserSchedule);
 
 //Company routes
 app.post('/api/register-company', protect, upload.single('requireDocument') , CompanyController.createCompany);
-app.get('/api/get-company-name/:companyId', protect, CompanyController.getCompanyById);
+app.get('/api/get-company/:companyId', protect, CompanyController.getCompanyById);
 app.get('/api/get-companies-by-exhibitor', protect, CompanyController.GetCompanyByExhibitor);
+app.delete('/api/delete-company/:companyId', protect, CompanyController.deleteCompanyById);
+app.put('/api/update-company/:companyId', protect, CompanyController.updateCompanyById)
 // Exhibitor routes
 app.post('/api/exhibitor', protect, exhibitorController.createExhibitor); 
 app.get('/api/exhibitor', protect, exhibitorController.getAllExhibitorsCompany); 

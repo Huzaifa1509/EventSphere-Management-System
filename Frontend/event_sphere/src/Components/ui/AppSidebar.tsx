@@ -91,10 +91,16 @@ const exhibitorItems = [
         icon: Calendar1,
     },
     {
+        title: "All Companies",
+        url: "/dashboard/allcompanies",
+        icon: User,
+    },
+    {
         title: "All Exhibitors",
         url: "/dashboard/exhibitors",
         icon: User,
     },
+    
 ]
 
 export function AppSidebar() {

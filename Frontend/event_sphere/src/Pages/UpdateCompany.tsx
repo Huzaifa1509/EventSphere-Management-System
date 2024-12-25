@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '@/Components/ui/Button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/Components/ui/Form';
-import { Input } from '@/Components/ui/Input'
-import { Send } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios'
-import { useToast } from "@/hooks/use-toast"
-import { Toaster } from '@/Components/ui/Toaster';
-import { Textarea } from "@/Components/ui/Textarea"
+import { Input } from '@/Components/ui/Input';
+import { Textarea } from '@/Components/ui/Textarea';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/Components/ui/Skeleton';
 
 const formSchema = z.object({
     companyName: z.string().min(5).max(50),
@@ -20,89 +19,156 @@ const formSchema = z.object({
     companyContact: z.string().min(11).max(14),
     companyAddress: z.string().max(50),
     companyService: z.string().max(50),
-    requireDocument: z
-        .instanceof(File, { message: "A valid file is required." })
-        .or(z.any()),
 })
 
+const UpdateCompany = () => {
+  const { companyId } = useParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState<boolean>(false);
+  const token = localStorage.getItem("token");
 
-const RegisterCompany = () => {
-    const { toast } = useToast()
-    const navigate = useNavigate()
-    const token = localStorage.getItem("token");
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            companyName: "",
-            companyDescription: "",
-            companyEmail: "",
-            companyContact: "",
-            companyAddress: "",
-            companyService: "",
-            requireDocument: z
-                .instanceof(File, { message: "A valid file is required." })
-                .or(z.any()),
-        },
-    })
+const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+        companyName: "",
+        companyDescription: "",
+        companyEmail: "",
+        companyContact: "",
+        companyAddress: "",
+        companyService: "",
+    },
+})
 
-     function onSubmit(values: z.infer<typeof formSchema>) {
+  if (!companyId) {
+    return <div className='text-red-500 text-center'>Invalid Company ID</div>;
+  }
 
-        try {
-            axios
-                .post('/api/register-company', values, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        'Authorization': `Bearer ${token}`
-                    },
-                })
-                .then((response) => {
-                    const companyId = response?.data?.company?._id;
-                    toast({
-                        variant: "default",
-                        title: "Company Registered",
-                        description: `Company Registered Successfully.`,
-                    })
-                    navigate('/dashboard/exhibitor', { state: { companyId } });
-                })
-                .catch((error) => {
-                    toast({
-                        variant: "destructive",
-                        title: "Error",
-                        description: error.response?.data?.message || "An error occurred during the process.",
-                    });
-                });
-
-        }
-        catch (error) {
-            console.error(error);
-            console.log(error.response?.data?.message);
+  useEffect(() => {
+    ; (async () => {
+      setLoading(true);
+      try {
+        await axios.get(`/api/get-company/${companyId}`,
+            {
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+            }
+        )
+          .then((response) => {
+            console.log(response.data);
+            const companyData = response.data;
+            form.setValue('companyName', companyData.companyName);
+            form.setValue('companyDescription', companyData.companyDescription);
+            form.setValue('companyEmail', companyData.companyEmail);
+            form.setValue('companyContact', companyData.companyContact);
+            form.setValue('companyAddress', companyData.companyAddress);
+            form.setValue('companyService', companyData.companyService);
             toast({
-                variant: "destructive",
-                title: "Error",
-                description: error.response?.data?.message || "An error occurred during the process.",
+              title: 'Company Data Loaded',
+              description: 'Company data has been loaded successfully',
+              variant: 'default',
             })
-        }
-    };
+            setLoading(false)
+          },
+          )
+          .catch((error) => {
+            setLoading(false)
+            console.error(error);
+            toast({
+              title: 'Error',
+              description: 'Failed to load Company data',
+              variant: 'destructive',
+            });
+          });
 
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to fetch company details',
+        });
+      }
+      finally {
+        setLoading(false);
+      }
+    })();
+
+
+
+  }, [/*expoId, form,*/ toast]);
+
+  if (loading) {
     return (
-        <>
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="space-y-8 bg-slate-500 p-5 rounded-2xl w-full max-w-4xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Skeleton for each input */}
+            <Skeleton className="h-10 rounded-md" />
+            <Skeleton className="h-10 rounded-md" />
+            <Skeleton className="col-span-full h-24 rounded-md" />
+            <Skeleton className="h-10 rounded-md" />
+            <Skeleton className="h-10 rounded-md" />
+            <Skeleton className="h-10 rounded-md" />
+            <Skeleton className="h-10 rounded-md" />
+            <Skeleton className="h-10 rounded-md" />
+          </div>
+          {/* Skeleton for submit button */}
+          <Skeleton className="h-12 w-32 rounded-md" />
+        </div>
+      </div>
+    );
+  }
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
+    try {
 
-            <div className="container flex flex-col justify-center items-center mx-auto px-4 mt-12 ">
-                <h1 className="text-2xl font-semibold text-center mb-3">Create Company</h1>
-                <p className='capitalize font-semibold mb-3'>As an exhibitor, your first step is to create a company profile. Once your company is registered, you can proceed to book booths for your company in the desired expos.</p>
-                <Form {...form}>
-                    <form
-                        method="post"
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="space-y-8 w-full bg-slate-900 text-white p-12 rounded-xl"
-                        encType="multipart/form-data"
-                    >
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      axios.put(`/api/update-company/${companyId}`, values,
+        {
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+        }
+      )
+        .then((response) => {
+          console.log(response.data);
+          toast({
+            variant: 'success',
+            title: 'Success',
+            description: 'Company updated successfully',
+          });
+
+          navigate('/dashboard/allcompanies');
+        })
+        .catch((error) => {
+          console.error(error);
+          console.log(error.response.data?.message);
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Failed to update company',
+          });
+        });
 
 
-                            {/* Company Name Field */}
-                            <FormField 
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to update company',
+      });
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <Form {...form}>
+        <form
+          method="post"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-8 bg-slate-900 text-white p-5 rounded-2xl w-full max-w-4xl"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+              {/* Company Name Field */}
+              <FormField 
                                 control={form.control}
                                 name="companyName"
                                 render={({ field }) => (
@@ -198,25 +264,13 @@ const RegisterCompany = () => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Company/Org Services</FormLabel>
-                                        <Select onValueChange={field.onChange}>
+                                        <Select onValueChange={(value) => field.onChange(value)} value={field.value}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select a Service" />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="WEB_DEVELOPMENT">Web Development</SelectItem>
-                                                <SelectItem value="MOBILE_APP_DEVELOPMENT">
-                                                    Mobile App Development
-                                                </SelectItem>
-                                                <SelectItem value="UI_UX_DESIGN">UI/UX Design</SelectItem>
-                                                <SelectItem value="DIGITAL_MARKETING">
-                                                    Digital Marketing
-                                                </SelectItem>
-                                                <SelectItem value="SEO">
-                                                    Search Engine Optimization (SEO)
-                                                </SelectItem>
-                                                <SelectContent>
                                                     <SelectItem value="WEB_DEVELOPMENT">Web Development</SelectItem>
                                                     <SelectItem value="MOBILE_APP_DEVELOPMENT">Mobile App Development</SelectItem>
                                                     <SelectItem value="UI_UX_DESIGN">UI/UX Design</SelectItem>
@@ -266,8 +320,6 @@ const RegisterCompany = () => {
                                                     <SelectItem value="HOSPITALITY_SERVICES">Hospitality Services</SelectItem>
                                                     <SelectItem value="RETAIL_SERVICES">Retail Services</SelectItem>
                                                     <SelectItem value="SUSTAINABILITY_SERVICES">Sustainability Services</SelectItem>
-
-                                                </SelectContent>
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -275,46 +327,14 @@ const RegisterCompany = () => {
                                 )}
                             />
 
-                            {/* Require Document Field */}
-                            <FormField
-                                control={form.control}
-                                name="requireDocument"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Official Document</FormLabel>
-                                        <FormControl>
-                                            <Input className='bg-white text-black hover:cursor-pointer'
-                                                placeholder="Please Insert Your Document"
-                                                type="file"
-                                                onChange={(e) => {
-                                                    // Use the `field.onChange` to handle the file manually
-                                                    if (e.target.files && e.target.files[0]) {
-                                                        field.onChange(e.target.files[0]); // Update the value with the selected file
-                                                    }
-                                                }}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
+          </div>
+          <Button className='bg-white text-black hover:bg-black hover:text-white' type="submit">Save Changes</Button>
+        </form>
+        <div className="flex items-center justify-end space-x-2 pt-6">
+        </div>
+      </Form>
+    </div>
+  );
+};
 
-                        <div className="flex justify-end">
-                            <Button
-                                className="w-full bg-white text-black hover:bg-black hover:text-white"
-                                type="submit"
-                            >
-                                <Send /> Save
-                            </Button>
-                        </div>
-                    </form>
-                </Form>
-            </div>
-
-            <Toaster />
-        </>
-    )
-}
-
-export default RegisterCompany
+export default UpdateCompany;

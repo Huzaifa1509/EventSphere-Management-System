@@ -14,12 +14,13 @@ import { Toaster } from '@/Components/ui/Toaster';
 import { Textarea } from "@/Components/ui/Textarea"
 import Modal from "react-modal";
 import { useLocation } from 'react-router-dom';
+import Register from './Register';
 
 const formSchema = z.object({
   productName: z.string().min(2).max(50),
   productDescription: z.string().max(500).toLowerCase(),
   expoId: z.string(),
-  companyId: z.string(),
+  companyId: z.string().nonempty("Company is required"),
 })
 
 
@@ -33,7 +34,7 @@ const Exhibitor = () => {
   const [selectedBooth, setSelectedBooth] = useState(null);
   const token = localStorage.getItem("token");
   const location = useLocation();
-  const companyId = location.state?.companyId;
+  const registeredCompanyId = location.state?.companyId;
 
   useEffect(() => {
 
@@ -85,7 +86,7 @@ const Exhibitor = () => {
       productName: "",
       productDescription: "",
       expoId: "",
-      companyId: "",
+      companyId: registeredCompanyId ? registeredCompanyId : "",
     },
   })
 
@@ -193,7 +194,7 @@ const Exhibitor = () => {
                   <FormControl>
                     <Select
                       onValueChange={(value) => field.onChange(value)} // Handle change
-                      value={companyId || field.value} // Select company by default
+                      value={field.value} // Select company by default
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select your company" />
