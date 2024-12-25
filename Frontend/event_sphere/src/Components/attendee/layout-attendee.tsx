@@ -3,9 +3,17 @@ import { ThemeProvider } from '@/Components/attendee/theme-provider'
 import { MainNav } from '@/Components/attendee/main-nav'
 import { UserNav } from '@/Components/attendee/user-nav'
 import { cn } from '@/lib/utils'
-import { Outlet } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
 
 const LayoutAttendee = () => {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const userRole = user.role;
+
+  if (userRole !== 'ATTENDEE') {
+    return <Navigate to="*" replace />;
+  }
+
+  
   return (
     <ThemeProvider attribute="class" defaultTheme="light">
       {/* <div className={cn('min-h-screen bg-background font-sans antialiased')}> */}
