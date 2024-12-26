@@ -134,7 +134,7 @@ export function ExhibitorSearch() {
                   </div>
                   <a
                     className="w-full inline-block text-center bg-primary text-white py-2 px-4 rounded"
-                    href={`mailto:${selectedExhibitor?.userId.email}`}
+                    href={`https://mailto:${selectedExhibitor?.userId.email}`}
                   >
                     Contact Exhibitor
                   </a>
