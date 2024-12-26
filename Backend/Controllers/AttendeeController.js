@@ -83,6 +83,36 @@ const registerForExpo = async (req, res) => {
   }
 };
 
+const attendeeLogin = async (req, res) => {
+  try {
+    const { userId } = req.user;   // Extract userId from request user object
+
+    const user = await User.findOne({ _id: userId});
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const attendeeResponse = await Attendee.create({
+      AttendeeId: user._id,
+      name: user.name,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      organization: user.organization
+    });
+
+    return res.status(200).json({
+      success: true,
+      attendee: attendeeResponse,
+    });
+  }
+  catch(error){
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+}
 
 //attendee register for session
 const registerForSession = async (req, res) => {
@@ -410,6 +440,7 @@ module.exports = {
   bookmarkSession,
   registerForExpo,
   registerForSession,
+  attendeeLogin,
   getAllSessions,
   getRegisteredExpoSessions
 };
