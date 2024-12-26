@@ -76,6 +76,7 @@ app.post('/api/exhibitor', protect, exhibitorController.createExhibitor);
 app.get('/api/exhibitor', protect, exhibitorController.getAllExhibitorsCompany); 
 app.put('/api/exhibitor/:ExhibitorId', protect, exhibitorController.ExhibitorIsAccepted);
 app.get('/api/exhibitor/contact-info-exchange/:ExhibitorId', protect, exhibitorController.ContactInfoExchange);
+app.get('/api/all-exhibitor', protect, exhibitorController.allExhibitors);
 
 
 // Start the server
