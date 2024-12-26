@@ -59,6 +59,7 @@ const createExhibitor = async (req, res) => {
 
 const getAllExhibitorsCompany = async (req, res) => {
   const { isAccepted } = req.query;
+  console.log(isAccepted);
   try {
     const ExhibitorsCompany = await Exhibitor.find({ isAccepted: Boolean(isAccepted) })
       .populate({
@@ -226,11 +227,34 @@ const ContactInfoExchange = async (req, res) => {
 //     }
 //   };
 
+const allExhibitors = async(req,res) => {
+  try {
+    const exhibitors = await Exhibitor.find().populate({
+      path: 'expoId',
+      model: 'Expo',
+    }).populate({
+      path: 'boothId',
+      model: 'Booth',
+    }).populate({
+      path: 'userId',
+      model: 'User',
+    }).populate({
+      path: 'companyId',
+      model: 'Company',
+    });
+    return res.status(200).json(exhibitors);
+  } catch (error) {
+    console.error("Error fetching exhibitors:", error);
+    return res.status(500).json({ message: "An error occurred while fetching exhibitors", error: error.message });
+  }
+}
+
 module.exports = {
   createExhibitor,
   getAllExhibitorsCompany,
   ExhibitorIsAccepted,
   ContactInfoExchange,
+  allExhibitors
   //   getExpoById,
   //   deleteExpo
 };
