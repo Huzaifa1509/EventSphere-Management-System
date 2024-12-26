@@ -159,12 +159,12 @@ const ContactInfoExchange = async (req, res) => {
       cc: GetExhibitorsRequest.companyId.companyEmail,
       subject: 'Requested Contact Info Recieved!',
       html: `<p>Hi ${GetUser.name},</p>
-      <p>Company Name: ${GetCompanyByExhibitor.companyName}</p>
-      <p>Company Description: ${GetCompanyByExhibitor.companyDescription}</p>
-      <p>Company Email: ${GetCompanyByExhibitor.companyEmail}</p>
-      <p>Company Contact: ${GetCompanyByExhibitor.companyContact}</p>
-      <p>Company Service: ${GetCompanyByExhibitor.companyService}</p>
-      <p>Company Address: ${GetCompanyByExhibitor.companyAddress}</p>`
+      <p>Company Name: ${GetExhibitorsRequest.companyId.companyName}</p>
+      <p>Company Description: ${GetExhibitorsRequest.companyId.companyDescription}</p>
+      <p>Company Email: ${GetExhibitorsRequest.companyId.companyEmail}</p>
+      <p>Company Contact: ${GetExhibitorsRequest.companyId.companyContact}</p>
+      <p>Company Service: ${GetExhibitorsRequest.companyId.companyService}</p>
+      <p>Company Address: ${GetExhibitorsRequest.companyId.companyAddress}</p>`
 
     };
 
@@ -175,7 +175,7 @@ const ContactInfoExchange = async (req, res) => {
       }
       console.log('Verification email sent:', info.response);
       
-    return res.status(200).json(GetCompanyByExhibitor);
+    return res.status(200).json(GetExhibitorsRequest);
     });
   }
   catch (error) {
