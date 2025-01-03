@@ -44,12 +44,6 @@ const Register = () => {
 
     console.log(values)
 
-
-    // const encryptStorage = new AsyncEncryptStorage('eventSphere', {
-    //   localStorage: 'localStorage',
-    //   expirationTime: 1800000, // 30mins
-    // });
-
     try {
       axios.post('/api/verify', { email: values.email, name: values.name })
         .then(response => {
@@ -150,7 +144,6 @@ const Register = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="ORGANIZER">Organizer</SelectItem>
                       <SelectItem value="EXHIBITOR">Exhibitor</SelectItem>
                       <SelectItem value="ATTENDEE">Attendee</SelectItem>
                     </SelectContent>
@@ -177,7 +170,7 @@ const Register = () => {
 
 
             {/* I only want to display organization field if role is organizer */}
-            {form.watch('role') === 'ORGANIZER' && (
+            {/* {form.watch('role') === 'ORGANIZER' && (
               <FormField
                 control={form.control}
                 name='organization'
@@ -192,7 +185,7 @@ const Register = () => {
                   </FormItem>
                 )}
               />
-            )}
+            )} */}
             <Button className="w-full bg-white text-black hover:bg-black hover:text-white" type="submit"><Key /> Register</Button>
           </form>
         </Form>

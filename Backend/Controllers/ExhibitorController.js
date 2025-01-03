@@ -3,6 +3,7 @@ const Exhibitor = require("../Models/Exhibitor");
 const User = require("../Models/User");
 const mongoose = require("mongoose");
 const nodemailer = require('nodemailer');
+const Booth = require("../Models/Booth");
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOSTNAME,
