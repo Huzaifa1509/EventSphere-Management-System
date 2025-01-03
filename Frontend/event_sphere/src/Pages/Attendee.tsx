@@ -26,7 +26,11 @@ const Attendee: React.FC = () => {
       try {
         const decodedToken: any = jwtDecode(token);
         const userId = decodedToken.userId;
-
+        axios.post('/api/attendee-login', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         // Fetch user profile
         axios.get('/api/users/profile', {
           headers: {
@@ -43,6 +47,8 @@ const Attendee: React.FC = () => {
         console.error("Invalid token:", error);
       }
     }
+
+
   }, []);
 
   return (

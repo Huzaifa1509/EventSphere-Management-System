@@ -216,7 +216,10 @@ export function ScheduleManager() {
             {Object.entries(groupedRegisteredSchedule).map(
               ([day, sessions]) => (
                 <TabsContent key={day} value={day}>
-                  {sessions.map((session) => (
+                   {sessions.length === 0 ? (
+                  <p>Nothing found</p>
+                ) : (
+                  sessions.map((session) => (
                     <div
                       key={session._id}
                       className="flex justify-between items-center mb-4 p-4 bg-secondary rounded-lg"
@@ -251,7 +254,8 @@ export function ScheduleManager() {
                           : "Bookmark"}
                       </Button>
                     </div>
-                  ))}
+                  ))
+                )}
                 </TabsContent>
               )
             )}
