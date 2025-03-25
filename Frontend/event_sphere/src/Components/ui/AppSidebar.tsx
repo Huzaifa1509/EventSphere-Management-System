@@ -100,7 +100,7 @@ const exhibitorItems = [
         url: "/dashboard/exhibitors",
         icon: User,
     },
-    
+
 ]
 
 export function AppSidebar() {
@@ -114,10 +114,11 @@ export function AppSidebar() {
     if (user.role === "ATTENDEE") {
         items = attendeeItems;
     }
-    else if(user.role === "EXHIBITOR") {
+    else if (user.role === "EXHIBITOR") {
+        console.log("Exhibitor");
         items = exhibitorItems;
     }
-         else {
+    else {
         items = adminItems;
     }
 

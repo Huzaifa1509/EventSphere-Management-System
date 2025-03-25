@@ -224,4 +224,41 @@ const forgetPassword = async (req, res) => {
 
 }
 
-module.exports = { createUser, loginUser, getProfile, updateUser, getAllUsers, deleteUser, forgetPassword };
+const getUserCount = async (req, res) => {
+    try {
+        // Using aggregation to get counts based on roles
+        const userCount = await User.aggregate([
+            {
+                $match: {
+                    role: { $in: ["ATTENDEE", "EXHIBITOR"] }
+                }
+            },
+            {
+                $group: {
+                    _id: "$role", 
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const attendeesCount = userCount.find(item => item._id === "ATTENDEE")?.count || 0;
+        const exhibitorsCount = userCount.find(item => item._id === "EXHIBITOR")?.count || 0;
+
+        console.log("User Count:", userCount);
+
+        console.table({ attendeesCount, exhibitorsCount });
+
+        const result = {
+            ATTENDEES: attendeesCount,
+            EXHIBITORS: exhibitorsCount,
+        };
+
+        console.log(result); // Log the counts
+        res.status(200).json({ userCount: result });
+    } catch (error) {
+        console.log(error); // Log error for debugging
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { createUser, loginUser, getProfile, updateUser, getAllUsers, deleteUser, forgetPassword, getUserCount };
